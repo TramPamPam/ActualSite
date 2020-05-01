@@ -27,5 +27,8 @@ struct ActualSite: Website {
 
 
 // This will generate your website using the built-in Foundation theme:
-try ActualSite().publish(withTheme: .customTheme, plugins: [.splash(withClassPrefix: "")])
+try ActualSite().publish(withTheme: .customTheme,
+                         deployedUsing: .gitHub("TramPamPam/ActualSite"),
+                         plugins: [.splash(withClassPrefix: "")]
+)
 
