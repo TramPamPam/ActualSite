@@ -1,0 +1,19 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="Hello world!"/><link rel="canonical" href="https://trampampam.github.io/posts/first-post"/><meta name="twitter:url" content="https://trampampam.github.io/posts/first-post"/><meta name="og:url" content="https://trampampam.github.io/posts/first-post"/><title>URL Session | Hello world!</title><meta name="twitter:title" content="URL Session | Hello world!"/><meta name="og:title" content="URL Session | Hello world!"/><meta name="description" content="A simple example of networking in Cocoa"/><meta name="twitter:description" content="A simple example of networking in Cocoa"/><meta name="og:description" content="A simple example of networking in Cocoa"/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Hello world!"/></head><body><header><div class="wrapper"><nav class="site-name"><a href="/">Hello world!</a></nav><br/><br/><nav><ul><li><a href="/posts">My posts</a></li><li><a href="/about">About</a></li><li><a href="/FAQ">Faq</a></li></ul></nav></div></header><div class="wrapper"><article class="content"><h1>URL Session</h1><p>Example:</p><pre><code>
+
+<span class="keyword">import</span> Cocoa
+
+<span class="keyword">let</span> session = <span class="type">URLSession</span>(configuration: <span class="type">URLSessionConfiguration</span>.<span class="property">default</span>)
+<span class="keyword">var</span> getTask = <span class="type">URLSessionTask</span>()
+
+<span class="keyword">var</span> request = <span class="type">URLRequest</span>(url: <span class="type">URL</span>(string: <span class="string">"https://itunes.apple.com/search?term=jack+johnson&amp;limit=25"</span>)!)
+request.<span class="property">httpMethod</span> = <span class="string">"GET"</span>
+
+getTask = session.<span class="call">dataTask</span>(with: request, completionHandler: { (data, response, error) <span class="keyword">in</span>
+    <span class="call">debugPrint</span>(<span class="string">"(data</span> \(data != <span class="keyword">nil</span>)<span class="string">, response</span> \(response)<span class="string">, error</span> \(response)<span class="string">"</span>)
+})
+
+
+getTask.<span class="call">resume</span>()
+
+
+</code></pre></article></div><footer>Hello</footer></body></html>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Hello world!</title><description>HI   </description><link>https://trampampam.github.io</link><language>en</language><lastBuildDate>Fri, 1 May 2020 17:10:14 +0300</lastBuildDate><pubDate>Fri, 1 May 2020 17:10:14 +0300</pubDate><ttl>250</ttl><atom:link href="https://trampampam.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://trampampam.github.io/posts/first-post</guid><title>URL Session</title><description>A simple example of networking in Cocoa</description><link>https://trampampam.github.io/posts/first-post</link><pubDate>Wed, 22 Apr 2020 19:38:00 +0300</pubDate><content:encoded><![CDATA[<h1>URL Session</h1><p>Example:</p><pre><code>
+
+<span class="keyword">import</span> Cocoa
+
+<span class="keyword">let</span> session = <span class="type">URLSession</span>(configuration: <span class="type">URLSessionConfiguration</span>.<span class="property">default</span>)
+<span class="keyword">var</span> getTask = <span class="type">URLSessionTask</span>()
+
+<span class="keyword">var</span> request = <span class="type">URLRequest</span>(url: <span class="type">URL</span>(string: <span class="string">"https://itunes.apple.com/search?term=jack+johnson&amp;limit=25"</span>)!)
+request.<span class="property">httpMethod</span> = <span class="string">"GET"</span>
+
+getTask = session.<span class="call">dataTask</span>(with: request, completionHandler: { (data, response, error) <span class="keyword">in</span>
+    <span class="call">debugPrint</span>(<span class="string">"(data</span> \(data != <span class="keyword">nil</span>)<span class="string">, response</span> \(response)<span class="string">, error</span> \(response)<span class="string">"</span>)
+})
+
+
+getTask.<span class="call">resume</span>()
+
+
+</code></pre>]]></content:encoded></item></channel></rss>
