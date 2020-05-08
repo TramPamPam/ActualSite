@@ -1,24 +1,9 @@
 ---
 date: 2020-04-24 09:33
-description: A description of my first post.
-tags: first, article
+description: A suite of extensions that aims to make Swift’s `Codable` API easier to use by giving it type inference-powered capabilities and conveniences.
+tags: about, lib, tools
 ---
 # Codextended (lib)
-
-<p align="center">
-    <img src="Logo.png" width="480” max-width="90%" alt="Codextended" />
-</p>
-
-<p align="center">
-    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
-    <a href="https://swift.org/package-manager">
-        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
-    </a>
-    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
-    <a href="https://twitter.com/johnsundell">
-        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
-    </a>
-</p>
 
 Welcome to **Codextended** — a suite of extensions that aims to make Swift’s `Codable` API easier to use by giving it type inference-powered capabilities and conveniences. It’s not a wrapper, nor is it a brand new framework, instead it augments `Codable` directly in a very lightweight way.
 

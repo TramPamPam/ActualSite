@@ -1,24 +1,9 @@
 ---
 date: 2020-04-24 09:33
-description: A description of my first post.
-tags: first, article
+description: A domain-specific language (DSL) for writing type-safe HTML, XML and RSS in Swift.
+tags: about, lib, tools
 ---
 # Plot (lib)
-
-<p align="center">
-    <img src="Logo.png" width="400" max-width="90%" alt="Plot" />
-</p>
-
-<p align="center">
-    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
-    <a href="https://swift.org/package-manager">
-        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
-    </a>
-     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
-    <a href="https://twitter.com/johnsundell">
-        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
-    </a>
-</p>
 
 Welcome to **Plot**, a domain-specific language (DSL) for writing type-safe HTML, XML and RSS in Swift. It can be used to build websites, documents and feeds, as a templating tool, or as a renderer for higher-level components and tools. It’s primary focus is on static site generation and Swift-based web development.
 

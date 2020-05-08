@@ -1,23 +1,9 @@
 ---
 date: 2020-04-24 09:34
-description: A description of my first post.
-tags: first, article
+description: Swift string scanning library. Scan any string for substrings appearing between two sets of characters — for example to parse out identifiers or metadata from a string of user-defined text.
+tags: about, lib, tools
 ---
 # Sweep (lib)
-
-<p align="center">
-    <img src="Logo.png" width="500" max-width="90%" alt="Sweep" />
-</p>
-<p align="center">
-    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
-    <a href="https://swift.org/package-manager">
-        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
-    </a>
-    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
-    <a href="https://twitter.com/johnsundell">
-        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
-    </a>
-</p>
 
 Welcome to **Sweep** — a powerful and fast, yet easy to use, Swift string scanning library. Scan any string for substrings appearing between two sets of characters — for example to parse out identifiers or metadata from a string of user-defined text.
 

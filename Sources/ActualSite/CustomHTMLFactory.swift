@@ -36,20 +36,33 @@ struct CustomHTMLFactory<Site: Website>: HTMLFactory {
     }
 
     func makeSectionHTML(for section: Section<Site>, context: PublishingContext<Site>) throws -> HTML {
-
-        HTML(
-            .lang(context.site.language),
-            .head(for: section, on: context.site),
-            .body(
-                .customHeader(for: context, selectedSection: section.id),
-                .wrapper(
-                    .h1(.text(section.title)),
-                    .itemList(for: section.items, on: context.site)
-                ),
-                .catFooter(for: context.site)
+        switch section.id as! ActualSite.SectionID {
+        case .faq:
+            return HTML(
+                    .lang(context.site.language),
+                    .head(for: section, on: context.site),
+                    .body(
+                        .customHeader(for: context, selectedSection: section.id),
+                        .wrapper(
+                            section.content.body.node
+                        ),
+                        .catFooter(for: context.site)
+                    )
+                )
+        default:
+            return HTML(
+                .lang(context.site.language),
+                .head(for: section, on: context.site),
+                .body(
+                    .customHeader(for: context, selectedSection: section.id),
+                    .wrapper(
+                        .h1(.text(section.title)),
+                        .itemList(for: section.items, on: context.site)
+                    ),
+                    .catFooter(for: context.site)
+                )
             )
-        )
-
+        }
     }
 
     func makeItemHTML(for item: Item<Site>, context: PublishingContext<Site>) throws -> HTML {

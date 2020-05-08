@@ -1,24 +1,9 @@
 ---
 date: 2020-04-24 09:33
-description: A description of my first post.
-tags: first, article
+description: A static site generator built specifically for Swift developers.
+tags: about, lib, tools
 ---
 # Publish (lib)
-
-<p align="center">
-    <img src="Logo.png" width="400" max-width="90%" alt="Publish" />
-</p>
-
-<p align="center">
-    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
-    <a href="https://swift.org/package-manager">
-        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
-    </a>
-     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
-    <a href="https://twitter.com/johnsundell">
-        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
-    </a>
-</p>
 
 Welcome to **Publish**, a static site generator built specifically for Swift developers. It enables entire websites to be built using Swift, and supports themes, plugins and tons of other powerful customization options.
 

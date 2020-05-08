@@ -1,7 +1,7 @@
 ---
 date: 2020-04-24 09:34
-description: A description of my first post.
-tags: first, article
+description: “shell out” from a Swift script or command line tool.
+tags: about, lib, tools
 ---
 
 # 🐚 ShellOut
