@@ -1,0 +1,113 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="Hello world!"/><link rel="canonical" href="https://trampampam.github.io/about/codeextented"/><meta name="twitter:url" content="https://trampampam.github.io/about/codeextented"/><meta name="og:url" content="https://trampampam.github.io/about/codeextented"/><title>Codextended (lib) | Hello world!</title><meta name="twitter:title" content="Codextended (lib) | Hello world!"/><meta name="og:title" content="Codextended (lib) | Hello world!"/><meta name="description" content="A description of my first post."/><meta name="twitter:description" content="A description of my first post."/><meta name="og:description" content="A description of my first post."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Hello world!"/></head><body><header><div class="wrapper"><nav class="site-name"><a href="/">Hello world!</a></nav><br/><br/><nav><ul><li><a href="/posts">My posts</a></li><li><a href="/about">About</a></li><li><a href="/FAQ">Faq</a></li></ul></nav></div></header><div class="wrapper"><article class="content"><h1>Codextended (lib)</h1><p align="center">
+    <img src="Logo.png" width="480” max-width="90%" alt="Codextended" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Codextended</strong> — a suite of extensions that aims to make Swift’s <code>Codable</code> API easier to use by giving it type inference-powered capabilities and conveniences. It’s not a wrapper, nor is it a brand new framework, instead it augments <code>Codable</code> directly in a very lightweight way.</p><h2>Codable is awesome!</h2><p>No third-party serialization framework can beat the convenience of <code>Codable</code>. Since it’s built in, it can both leverage the compiler to automatically synthesize all serialization code needed in many situations, and it can also be used as a common bridge between multiple different modules — without having to introduce any shared dependencies.</p><p>However, once some form of customization is needed — for example to transform parts of the decoded data, or to provide default values for certain keys — the standard <code>Codable</code> API starts to become <em>really</em> verbose. It also doesn’t take advantage of Swift’s robust type inference capabilities, which produces a lot of unnecessary boilerplate.</p><p>That’s what <strong>Codextended</strong> aims to fix.</p><h2>Examples</h2><p>Here are a few examples that demonstrate the difference between using “vanilla” <code>Codable</code> and the APIs that <strong>Codextended</strong> adds to it. The goal is to turn all common serialization operations into one-liners, rather than having to set up a ton of boilerplate.</p><h3>🏢 Top-level API</h3><p><strong>Codextended</strong> makes a few slight tweaks to the top-level API used to encode and decode values, making it possible to leverage type inference and use methods on the actual values that are being encoded or decoded.</p><p>🍨 With vanilla <code>Codable</code>:</p><pre><code><span class="comment">// Encoding</span>
+<span class="keyword">let</span> encoder = <span class="type">JSONEncoder</span>()
+<span class="keyword">let</span> data = <span class="keyword">try</span> encoder.<span class="call">encode</span>(value)
+
+<span class="comment">// Decoding</span>
+<span class="keyword">let</span> decoder = <span class="type">JSONDecoder</span>()
+<span class="keyword">let</span> article = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="type">Article</span>.<span class="keyword">self</span>, from: data)
+</code></pre><p>🦸‍♀️ With <strong>Codextended</strong>:</p><pre><code><span class="comment">// Encoding</span>
+<span class="keyword">let</span> data = <span class="keyword">try</span> value.<span class="call">encoded</span>()
+
+<span class="comment">// Decoding</span>
+<span class="keyword">let</span> article = <span class="keyword">try</span> data.<span class="call">decoded</span>() <span class="keyword">as</span> <span class="type">Article</span>
+
+<span class="comment">// Decoding when the type can be inferred</span>
+<span class="keyword">try</span> <span class="call">saveArticle</span>(data.<span class="call">decoded</span>())
+</code></pre><h3>🔑 Overriding the behavior for a single key</h3><p>While <code>Codable</code> is amazing as long as the serialized data’s format exactly matches the format of the Swift types that’ll use it — as soon as we need to make just a small tweak, things quickly go from really convenient to very verbose.</p><p>As an example, let’s just say that we want to provide a default value for one single property (without having to make it an optional, which would make it harder to handle in the rest of our code base). To do that, we need to completely manually implement our type’s decoding — like below for the <code>tags</code> property of an <code>Article</code> type.</p><p>🍨 With vanilla <code>Codable</code>:</p><pre><code><span class="keyword">struct</span> Article: <span class="type">Codable</span> {
+    <span class="keyword">enum</span> CodingKeys: <span class="type">CodingKey</span> {
+        <span class="keyword">case</span> title
+        <span class="keyword">case</span> body
+        <span class="keyword">case</span> footnotes
+        <span class="keyword">case</span> tags
+    }
+
+    <span class="keyword">var</span> title: <span class="type">String</span>
+    <span class="keyword">var</span> body: <span class="type">String</span>
+    <span class="keyword">var</span> footnotes: <span class="type">String</span>?
+    <span class="keyword">var</span> tags: [<span class="type">String</span>]
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">let</span> container = <span class="keyword">try</span> decoder.<span class="call">container</span>(keyedBy: <span class="type">CodingKeys</span>.<span class="keyword">self</span>)
+        title = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">title</span>)
+        body = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">body</span>)
+        footnotes = <span class="keyword">try</span> container.<span class="call">decodeIfPresent</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">footnotes</span>)
+        tags = (try? container.<span class="call">decode</span>([<span class="type">String</span>].<span class="keyword">self</span>, forKey: .<span class="dotAccess">tags</span>)) ?? []
+    }
+}
+</code></pre><p>🦸‍♂️ With <strong>Codextended</strong>:</p><pre><code><span class="keyword">struct</span> Article: <span class="type">Codable</span> {
+    <span class="keyword">var</span> title: <span class="type">String</span>
+    <span class="keyword">var</span> body: <span class="type">String</span>
+    <span class="keyword">var</span> footnotes: <span class="type">String</span>?
+    <span class="keyword">var</span> tags: [<span class="type">String</span>]
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        title = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"title"</span>)
+        body = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"body"</span>)
+        footnotes = <span class="keyword">try</span> decoder.<span class="call">decodeIfPresent</span>(<span class="string">"footnotes"</span>)
+        tags = (try? decoder.<span class="call">decode</span>(<span class="string">"tags"</span>)) ?? []
+    }
+}
+</code></pre><p><strong>Codextended</strong> includes decoding overloads both for <code>CodingKey</code>-based values and for string literals, so that we can pick the approach that’s the most appropriate/convenient for each given situation.</p><h3>📆 Using date formatters</h3><p><code>Codable</code> already comes with support for custom date formats through assigning a <code>DateFormatter</code> to either a <code>JSONEncoder</code> or <code>JSONDecoder</code>. However, requiring each call site to be aware of the specific date formats used for each type isn’t always great — so with <strong>Codextended</strong>, it’s easy for a type itself to pick what date format it needs to use.</p><p>That’s really convenient when working with third-party data, and we only want to customize the date format for some of our types, or when we want to produce more readable date strings when encoding a value.</p><p>🍨 With vanilla <code>Codable</code>:</p><pre><code><span class="keyword">struct</span> Bookmark: <span class="type">Codable</span> {
+    <span class="keyword">enum</span> CodingKeys: <span class="type">CodingKey</span> {
+        <span class="keyword">case</span> url
+        <span class="keyword">case</span> date
+    }
+
+    <span class="keyword">struct</span> DateCodingError: <span class="type">Error</span> {}
+
+    <span class="keyword">static let</span> dateFormatter = <span class="call">makeDateFormatter</span>()
+
+    <span class="keyword">var</span> url: <span class="type">URL</span>
+    <span class="keyword">var</span> date: <span class="type">Date</span>
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">let</span> container = <span class="keyword">try</span> decoder.<span class="call">container</span>(keyedBy: <span class="type">CodingKeys</span>.<span class="keyword">self</span>)
+        url = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">URL</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">url</span>)
+
+        <span class="keyword">let</span> dateString = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">date</span>)
+
+        <span class="keyword">guard let</span> date = <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>.<span class="call">date</span>(from: dateString) <span class="keyword">else</span> {
+            <span class="keyword">throw</span> <span class="type">DateCodingError</span>()
+        }
+
+        <span class="keyword">self</span>.<span class="property">date</span> = date
+    }
+
+    <span class="keyword">func</span> encode(to encoder: <span class="type">Encoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">var</span> container = encoder.<span class="call">container</span>(keyedBy: <span class="type">CodingKeys</span>.<span class="keyword">self</span>)
+        <span class="keyword">try</span> container.<span class="call">encode</span>(url, forKey: .<span class="dotAccess">url</span>)
+
+        <span class="keyword">let</span> dateString = <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>.<span class="call">string</span>(from: date)
+        <span class="keyword">try</span> container.<span class="call">encode</span>(dateString, forKey: .<span class="dotAccess">date</span>)
+    }
+}
+</code></pre><p>🦹‍♀️ With <strong>Codextended</strong>:</p><pre><code><span class="keyword">struct</span> Bookmark: <span class="type">Codable</span> {
+    <span class="keyword">static let</span> dateFormatter = <span class="call">makeDateFormatter</span>()
+
+    <span class="keyword">var</span> url: <span class="type">URL</span>
+    <span class="keyword">var</span> date: <span class="type">Date</span>
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        url = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"url"</span>)
+        date = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"date"</span>, using: <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>)
+    }
+
+    <span class="keyword">func</span> encode(to encoder: <span class="type">Encoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">try</span> encoder.<span class="call">encode</span>(url, for: <span class="string">"url"</span>)
+        <span class="keyword">try</span> encoder.<span class="call">encode</span>(date, for: <span class="string">"date"</span>, using: <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>)
+    }
+}
+</code></pre><p>Again, we could’ve chosen to use a <code>CodingKeys</code> enum above to represent our keys, rather than using inline strings.</p><h2>Mix and match</h2><p>Since <strong>Codextended</strong> is 100% implemented through extensions, you can easily mix and match it with “vanilla” <code>Codable</code> code within the same project. It also doesn’t change what makes <code>Codable</code> so great — the fact that it often doesn’t require any manual code at all, and that it can be used as a bridge between frameworks.</p><p>All it does is give <code>Codable</code> a <em>helping hand</em> when some form of customization is needed.</p><h2>Installation</h2><p>Since <strong>Codextended</strong> is implemented within a single file, the easiest way to use it is to simply drag and drop it into your Xcode project.</p><p>But if you wish to use a dependency manager, you can either use the <a href="https://github.com/apple/swift-package-manager">Swift Package Manager</a> by declaring <strong>Codextended</strong> as a dependency in your <code>Package.swift</code> file:</p><pre><code>.<span class="call">package</span>(url: <span class="string">"https://github.com/JohnSundell/Codextended"</span>, from: <span class="string">"0.1.0"</span>)
+</code></pre><p><em>For more information, see <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">the Swift Package Manager documentation</a>.</em></p><p>You can also use <a href="https://cocoapods.org">CocoaPods</a> by adding the following line to your <code>Podfile</code>:</p><pre><code>pod <span class="string">"Codextended"</span>
+</code></pre><h2>Contributions &amp; support</h2><p><strong>Codextended</strong> is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using <strong>Codextended</strong> in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation (it all fits <a href="https://github.com/JohnSundell/Codextended/blob/master/Sources/Codextended/Codextended.swift">in a single file</a>!), so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>To learn more about the principles used to implement <strong>Codextended</strong>, check out <em><a href="https://www.swiftbysundell.com/posts/type-inference-powered-serialization-in-swift">“Type inference-powered serialization in Swift”</a></em> on Swift by Sundell.</p><p>This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Codextended/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you’ll enjoy using <strong>Codextended</strong>! 😀</p></article></div><footer>Hello</footer></body></html>

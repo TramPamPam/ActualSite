@@ -10,6 +10,10 @@ import Publish
 extension Theme {
     static var customTheme: Theme {
         Theme(htmlFactory: CustomHTMLFactory(),
-              resourcePaths: ["Resources/CustomTheme/styles.css"])
+              resourcePaths: [
+                "Resources/CustomTheme/styles.css",
+                "Resources/CustomTheme/screenshot.png"
+            ]
+        )
     }
 }

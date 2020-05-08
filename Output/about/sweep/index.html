@@ -1,0 +1,65 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="Hello world!"/><link rel="canonical" href="https://trampampam.github.io/about/sweep"/><meta name="twitter:url" content="https://trampampam.github.io/about/sweep"/><meta name="og:url" content="https://trampampam.github.io/about/sweep"/><title>Sweep (lib) | Hello world!</title><meta name="twitter:title" content="Sweep (lib) | Hello world!"/><meta name="og:title" content="Sweep (lib) | Hello world!"/><meta name="description" content="A description of my first post."/><meta name="twitter:description" content="A description of my first post."/><meta name="og:description" content="A description of my first post."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Hello world!"/></head><body><header><div class="wrapper"><nav class="site-name"><a href="/">Hello world!</a></nav><br/><br/><nav><ul><li><a href="/posts">My posts</a></li><li><a href="/about">About</a></li><li><a href="/FAQ">Faq</a></li></ul></nav></div></header><div class="wrapper"><article class="content"><h1>Sweep (lib)</h1><p align="center">
+    <img src="Logo.png" width="500" max-width="90%" alt="Sweep" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Sweep</strong> — a powerful and fast, yet easy to use, Swift string scanning library. Scan any string for substrings appearing between two sets of characters — for example to parse out identifiers or metadata from a string of user-defined text.</p><p>Sweep can be dropped into a project as a general-purpose string scanning algorithm, or act as the base for custom, more high-level scanning implementations. It aims to complement the Swift standard library’s built-in string handling APIs, both in terms of its design, and also how its implemented in an efficient way in line with Swift’s various string conventions.</p><h2>Examples</h2><p>The easiest way to start using Sweep is to call the <code>substrings</code> method that it adds on top of <code>StringProtocol</code> — meaning that you can use it on both “normal” strings and <code>Substring</code> values.</p><p>Here’s an example in which we scan a string for HTML tags, and both identify the names of all tags that appear in the string, and also any text that should be rendered in bold:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> html = <span class="string">"&lt;p&gt;Hello, &lt;b&gt;this is bold&lt;/b&gt;, right?&lt;/p&gt;"</span>
+<span class="keyword">let</span> tags = html.<span class="call">substrings</span>(between: <span class="string">"&lt;"</span>, and: <span class="string">"&gt;"</span>)
+<span class="call">print</span>(tags) <span class="comment">// ["p", "b", "/b", "/p"]</span>
+
+<span class="keyword">let</span> boldText = html.<span class="call">substrings</span>(between: <span class="string">"&lt;b&gt;"</span>, and: <span class="string">"&lt;/b&gt;"</span>)
+<span class="call">print</span>(boldText) <span class="comment">// ["this is bold"]</span>
+</code></pre><p>Sweep can also scan for different patterns, such as a prefix appearing at the start of the scanned string, or its end. Here we’re using those capabilities to identify headings in a string of Markdown-formatted text:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> markdown = <span class="string">"""
+## Section 1
+
+Text
+
+## Section 2
+"""</span>
+
+<span class="keyword">let</span> headings = markdown.<span class="call">substrings</span>(between: [.<span class="call">prefix</span>(<span class="string">"## "</span>), <span class="string">"\n## "</span>],
+                                   and: [.<span class="dotAccess">end</span>, <span class="string">"\n"</span>])
+
+<span class="call">print</span>(headings) <span class="comment">// ["Section 1", "Section 2"]</span>
+</code></pre><p>Since Sweep was designed to fit right in alongside Swift’s built-in string APIs, it lets us compose more powerful string scanning algorithms using both built-in functionality and the APIs that Sweep adds — such as here where we’re parsing out an array of tags from a string written using a custom syntax:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> text = <span class="string">"{{tags: swift, programming, xcode}}"</span>
+<span class="keyword">let</span> tagStrings = text.<span class="call">substrings</span>(between: <span class="string">"{{tags: "</span>, and: <span class="string">"}}"</span>)
+<span class="keyword">let</span> tags = tagStrings.<span class="call">flatMap</span> { $0.<span class="call">components</span>(separatedBy: <span class="string">", "</span>) }
+<span class="call">print</span>(tags) <span class="comment">// ["swift", "programming", "xcode"]</span>
+</code></pre><p>Sweep was also designed to be highly efficient, and only makes a single pass through each string that it scans — regardless of how many different patterns you wish to scan for. In this example, we’re using two custom matchers to parse two pieces of metadata from a string:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> text = <span class="string">"""
+url: https://swiftbysundell.com
+title: Swift by Sundell
+"""</span>
+
+<span class="keyword">var</span> urls = [<span class="type">URL</span>]()
+<span class="keyword">var</span> titles = [<span class="type">String</span>]()
+
+text.<span class="call">scan</span>(using: [
+    <span class="type">Matcher</span>(identifiers: [<span class="string">"url: "</span>], terminators: [<span class="string">"\n"</span>, .<span class="dotAccess">end</span>]) { match, range <span class="keyword">in
+        let</span> string = <span class="type">String</span>(match)
+        <span class="keyword">let</span> url = <span class="type">URL</span>(string: string)
+        url.<span class="call">flatMap</span> { urls.<span class="call">append</span>($0) }
+    },
+    <span class="type">Matcher</span>(identifiers: [<span class="string">"title: "</span>], terminators: [<span class="string">"\n"</span>, .<span class="dotAccess">end</span>]) { match, range <span class="keyword">in
+        let</span> string = <span class="type">String</span>(match)
+        titles.<span class="call">append</span>(string)
+    }
+])
+
+<span class="call">print</span>(urls) <span class="comment">// [https://swiftbysundell.com]</span>
+<span class="call">print</span>(titles) <span class="comment">// ["Swift by Sundell"]</span>
+</code></pre><p>Sweep is not only efficient in terms of complexity, it also has a very low memory overhead, thanks to it being built according to Swift’s modern string conventions — making full use of types like <code>Substring</code> and <code>String.Index</code>, and avoiding unnecessary copying and mutations when performing its scanning.</p><h2>Installation</h2><p>Sweep is distributed as a Swift package, and it’s recommended to install it using <a href="https://github.com/apple/swift-package-manager">the Swift Package Manager</a>, by declaring it as a dependency in your project’s <code>Package.swift</code> file:</p><pre><code>.<span class="call">package</span>(url: <span class="string">"https://github.com/JohnSundell/Sweep"</span>, from: <span class="string">"0.1.0"</span>)
+</code></pre><p>For more information, please see the <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">Swift Package Manager documentation</a>.</p><h2>Contributions &amp; support</h2><p>Sweep is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Sweep in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation (it all fits <a href="https://github.com/JohnSundell/Sweep/blob/master/Sources/Sweep/Sweep.swift">in a single file</a>!), so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>To learn more about the principles used to implement Sweep, check out <em><a href="https://www.swiftbysundell.com/posts/string-parsing-in-swift">“String parsing in Swift”</a></em> on Swift by Sundell.</p><p>Sweep does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Sweep/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you enjoy using Sweep! 😀</p></article></div><footer>Hello</footer></body></html>

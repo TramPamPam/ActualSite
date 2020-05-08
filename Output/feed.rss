@@ -1,4 +1,728 @@
-<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Hello world!</title><description>HI   </description><link>https://trampampam.github.io</link><language>en</language><lastBuildDate>Thu, 7 May 2020 15:02:34 +0300</lastBuildDate><pubDate>Thu, 7 May 2020 15:02:34 +0300</pubDate><ttl>250</ttl><atom:link href="https://trampampam.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://trampampam.github.io/posts/first-post</guid><title>URL Session</title><description>A simple example of networking in Cocoa</description><link>https://trampampam.github.io/posts/first-post</link><pubDate>Wed, 22 Apr 2020 19:38:00 +0300</pubDate><content:encoded><![CDATA[<h1>URL Session</h1><p>Example:</p><pre><code>
+<?xml version="1.0" encoding="UTF-8"?><rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:content="http://purl.org/rss/1.0/modules/content"><channel><title>Hello world!</title><description>HI   </description><link>https://trampampam.github.io</link><language>en</language><lastBuildDate>Fri, 8 May 2020 14:50:11 +0300</lastBuildDate><pubDate>Fri, 8 May 2020 14:50:11 +0300</pubDate><ttl>250</ttl><atom:link href="https://trampampam.github.io/feed.rss" rel="self" type="application/rss+xml"/><item><guid isPermaLink="true">https://trampampam.github.io/posts/second-post</guid><title>UIActivityItemSource example</title><description>Custom body and title for GMail sharing</description><link>https://trampampam.github.io/posts/second-post</link><pubDate>Mon, 8 Jun 2020 19:38:00 +0300</pubDate><content:encoded><![CDATA[<h1>UIActivityItemSource example</h1><pre><code><span class="keyword">class</span> MailItemSource: <span class="type">NSObject</span>, <span class="type">UIActivityItemSource</span> {
+    <span class="keyword">private let</span> subject: <span class="type">String</span>
+    <span class="keyword">private let</span> body: <span class="type">String</span>
+
+    <span class="keyword">init</span>(subject: <span class="type">String</span>, body: <span class="type">String</span>) {
+        <span class="keyword">self</span>.<span class="property">subject</span> = subject
+        <span class="keyword">self</span>.<span class="property">body</span> = body
+        <span class="keyword">super</span>.<span class="keyword">init</span>()
+    }
+
+    <span class="keyword">func</span> activityViewControllerPlaceholderItem(<span class="keyword">_</span> activityViewController: <span class="type">UIActivityViewController</span>) -&gt; <span class="type">Any</span> {
+        body
+    }
+
+    <span class="keyword">func</span> activityViewController(<span class="keyword">_</span> activityViewController: <span class="type">UIActivityViewController</span>, itemForActivityType activityType: <span class="type">UIActivity</span>.<span class="type">ActivityType</span>?) -&gt; <span class="type">Any</span>? {
+        <span class="keyword">if</span> activityType?.<span class="property">rawValue</span> == <span class="string">"com.google.Gmail.ShareExtension"</span> {
+            <span class="keyword">return</span> <span class="string">"</span>\(subject) <span class="string">\n\n</span> \(body)<span class="string">"</span>
+        }
+        <span class="keyword">return</span> body
+    }
+
+    <span class="keyword">func</span> activityViewController(<span class="keyword">_</span> activityViewController: <span class="type">UIActivityViewController</span>, subjectForActivityType activityType: <span class="type">UIActivity</span>.<span class="type">ActivityType</span>?) -&gt; <span class="type">String</span> {
+        subject
+    }
+}
+</code></pre><p>Usage:</p><pre><code>  <span class="keyword">let</span> source = <span class="type">MailItemSource</span>(subject: title, body: text)
+ <span class="keyword">let</span> sharingScreen = <span class="type">UIActivityViewController</span>(activityItems: [source], applicationActivities: [])
+ &lt;viewController&gt;.<span class="call">present</span>(sharingScreen, animated: <span class="keyword">true</span>)
+</code></pre>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/posts/fadedview</guid><title>Faded text view</title><description>A simple example of faded UITextView</description><link>https://trampampam.github.io/posts/fadedview</link><pubDate>Fri, 8 May 2020 19:38:00 +0300</pubDate><content:encoded><![CDATA[<h1>Faded text view</h1><p>Implementation:</p><pre><code><span class="keyword">import</span> UIKit
+<span class="keyword">import</span> Foundation
+<span class="keyword">class</span> FadedTextView: <span class="type">UITextView</span> {
+    <span class="keyword">private let</span> containerInset: <span class="type">CGFloat</span> = <span class="number">40</span>
+    <span class="keyword">private let</span> gradientOffsetTop: <span class="type">NSNumber</span> = <span class="number">0.1</span>
+    <span class="keyword">private let</span> gradientOffsetBottom: <span class="type">NSNumber</span> = <span class="number">0.9</span>
+
+    <span class="keyword">override func</span> layoutSubviews() {
+        <span class="keyword">super</span>.<span class="call">layoutSubviews</span>()
+
+        <span class="keyword">let</span> maskLayer = <span class="type">CALayer</span>()
+        maskLayer.<span class="property">frame</span> = bounds
+
+        <span class="keyword">let</span> gradientLayer = <span class="type">CAGradientLayer</span>()
+        gradientLayer.<span class="property">frame</span> = <span class="type">CGRect</span>(x: bounds.<span class="property">origin</span>.<span class="property">x</span>, y: <span class="number">0</span>, width: bounds.<span class="property">width</span>, height: bounds.<span class="property">height</span>)
+        gradientLayer.<span class="property">colors</span> = [<span class="type">UIColor</span>.<span class="property">clear</span>.<span class="property">cgColor</span>,
+                                <span class="type">UIColor</span>.<span class="property">white</span>.<span class="property">cgColor</span>,
+                                <span class="type">UIColor</span>.<span class="property">white</span>.<span class="property">cgColor</span>,
+                                <span class="type">UIColor</span>.<span class="property">clear</span>.<span class="property">cgColor</span>]
+
+        gradientLayer.<span class="property">locations</span> = [<span class="number">0.0</span>, gradientOffsetTop, gradientOffsetBottom, <span class="number">1.0</span>]
+
+        maskLayer.<span class="call">addSublayer</span>(gradientLayer)
+        <span class="keyword">self</span>.<span class="property">layer</span>.<span class="property">mask</span> = maskLayer
+
+        textContainerInset = <span class="type">UIEdgeInsets</span>(top: containerInset, left: <span class="number">0</span>, bottom: <span class="number">0</span>, right: <span class="number">0</span>)
+    }
+}
+</code></pre><p>Screenshot:</p><img src="https://trampampam.github.io/screenshot.png" width="375" height="667">
+]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/ink</guid><title>Ink (lib)</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/ink</link><pubDate>Fri, 24 Apr 2020 09:34:00 +0300</pubDate><content:encoded><![CDATA[<h1>Ink (lib)</h1><p align="center">
+    <img src="Logo.png" width="278" max-width="90%" alt=“Ink” />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Ink</strong>, a fast and flexible Markdown parser written in Swift. It can be used to convert Markdown-formatted strings into HTML, and also supports metadata parsing, as well as powerful customization options for fine-grained post-processing. It was built with a focus on Swift-based web development and other HTML-centered workflows.</p><p>Ink is used to render all articles on <a href="https://swiftbysundell.com">swiftbysundell.com</a>.</p><h2>Converting Markdown into HTML</h2><p>To get started with Ink, all you have to do is to import it, and use its <code>MarkdownParser</code> type to convert any Markdown string into efficiently rendered HTML:</p><pre><code><span class="keyword">import</span> Ink
+
+<span class="keyword">let</span> markdown: <span class="type">String</span> = ...
+<span class="keyword">let</span> parser = <span class="type">MarkdownParser</span>()
+<span class="keyword">let</span> html = parser.<span class="call">html</span>(from: markdown)
+</code></pre><p>That’s it! The resulting HTML can then be displayed as-is, or embedded into some other context — and if that’s all you need Ink for, then no more code is required.</p><h2>Automatic metadata parsing</h2><p>Ink also comes with metadata support built-in, meaning that you can define key/value pairs at the top of any Markdown document, which will then be automatically parsed into a Swift dictionary.</p><p>To take advantage of that feature, call the <code>parse</code> method on <code>MarkdownParser</code>, which gives you a <code>Markdown</code> value that both contains any metadata found within the parsed Markdown string, as well as its HTML representation:</p><pre><code><span class="keyword">let</span> markdown: <span class="type">String</span> = ...
+<span class="keyword">let</span> parser = <span class="type">MarkdownParser</span>()
+<span class="keyword">let</span> result = parser.<span class="call">parse</span>(markdown)
+
+<span class="keyword">let</span> dateString = result.<span class="property">metadata</span>[<span class="string">"date"</span>]
+<span class="keyword">let</span> html = result.<span class="property">html</span>
+</code></pre><p>To define metadata values within a Markdown document, use the following syntax:</p><pre><code>---
+keyA: valueA
+keyB: valueB
+---
+
+<span class="type">Markdown</span> text...
+</code></pre><p>The above format is also supported by many different Markdown editors and other tools, even though it’s not part of the <a href="https://daringfireball.net/projects/markdown">original Markdown spec</a>.</p><h2>Powerful customization</h2><p>Besides its <a href="#markdown-syntax-supported">built-in parsing rules</a>, which aims to cover the most common features found in the various flavors of Markdown, you can also customize how Ink performs its parsing through the use of <em>modifiers</em>.</p><p>A modifier is defined using the <code>Modifier</code> type, and is associated with a given <code>Target</code>, which determines the kind of Markdown fragments that it will be used for. For example, here’s how an H3 tag could be added before each code block:</p><pre><code><span class="keyword">var</span> parser = <span class="type">MarkdownParser</span>()
+
+<span class="keyword">let</span> modifier = <span class="type">Modifier</span>(target: .<span class="dotAccess">codeBlocks</span>) { html, markdown <span class="keyword">in
+    return</span> <span class="string">"&lt;h3&gt;This is a code block:&lt;/h3&gt;"</span> + html
+}
+
+parser.<span class="call">addModifier</span>(modifier)
+
+<span class="keyword">let</span> markdown: <span class="type">String</span> = ...
+<span class="keyword">let</span> html = parser.<span class="call">html</span>(from: markdown)
+</code></pre><p>Modifiers are passed both the HTML that Ink generated for the given fragment, and its raw Markdown representation as well — both of which can be used to determine how each fragment should be customized.</p><h2>Performance built-in</h2><p>Ink was designed to be as fast and efficient as possible, to enable hundreds of full-length Markdown articles to be parsed in a matter of seconds, while still offering a fully customizable API as well. Two key characteristics make this possible:</p><ol><li>Ink aims to get as close to <code>O(N)</code> complexity as possible, by minimizing the amount of times it needs to read the Markdown strings that are passed to it, and by optimizing its HTML rendering to be completely linear. While <em>true</em> <code>O(N)</code> complexity is impossible to achieve when it comes to Markdown parsing, because of its very flexible syntax, the goal is to come as close to that target as possible.</li><li>A high degree of memory efficiency is achieved thanks to Swift’s powerful <code>String</code> API, which Ink makes full use of — by using string indexes, ranges and substrings, rather than performing unnecessary string copying between its various operations.</li></ol><h2>Installation</h2><p>Ink is distributed using the <a href="https://swift.org/package-manager">Swift Package Manager</a>. To install it into a project, simply add it as a dependency within your <code>Package.swift</code> manifest:</p><pre><code><span class="keyword">let</span> package = <span class="type">Package</span>(
+    ...
+    dependencies: [
+        .<span class="call">package</span>(url: <span class="string">"https://github.com/johnsundell/ink.git"</span>, from: <span class="string">"0.1.0"</span>)
+    ],
+    ...
+)
+</code></pre><p>Then import Ink wherever you’d like to use it:</p><pre><code><span class="keyword">import</span> Ink
+</code></pre><p>For more information on how to use the Swift Package Manager, check out <a href="https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager">this article</a>, or <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">its official documentation</a>.</p><h2>Command line tool</h2><p>Ink also ships with a simple but useful command line tool that lets you convert Markdown to HTML directly from the command line.</p><p>To install it, clone the project and run <code>make</code>:</p><pre><code>$ git clone https://github.<span class="property">com</span>/johnsundell/<span class="type">Ink</span>.<span class="property">git</span>
+$ cd <span class="type">Ink</span>
+$ make
+</code></pre><p>The command line tool will be installed as <code>ink</code>, and can be passed Markdown text for conversion into HTML in several ways.</p><p>Calling it without arguments will start reading from <code>stdin</code> until terminated with <code>Ctrl+D</code>:</p><pre><code>$ ink
+</code></pre><p>Markdown text can be piped in when <code>ink</code> is called without arguments:</p><pre><code>$ echo <span class="string">"*Hello World*"</span> | ink
+</code></pre><p>A single argument is treated as a filename, and the corresponding file will be parsed:</p><pre><code>$ ink file.<span class="property">md</span>
+</code></pre><p>A Markdown string can be passed directly using the <code>-m</code> or <code>--markdown</code> flag:</p><pre><code>$ ink -m <span class="string">"*Hello World*"</span>
+</code></pre><p>You can of course also build your own command line tools that utilizes Ink in more advanced ways by importing it as a package.</p><h2>Markdown syntax supported</h2><p>Ink supports the following Markdown features:</p><ul><li>Headings (H1 - H6), using leading pound signs, for example <code>## H2</code>.</li><li>Italic text, by surrounding a piece of text with either an asterisk (<code>*</code>), or an underscore (<code>_</code>). For example <code>*Italic text*</code>.</li><li>Bold text, by surrounding a piece of text with either two asterisks (<code>**</code>), or two underscores (<code>__</code>). For example <code>**Bold text**</code>.</li><li>Text strikethrough, by surrounding a piece of text with two tildes (<code>~~</code>), for example <code>~~Strikethrough text~~</code>.</li><li>Inline code, marked with a backtick on either site of the code.</li><li>Code blocks, marked with three or more backticks both above and below the block.</li><li>Links, using the following syntax: <code>[Title](url)</code>.</li><li>Images, using the following syntax: <code>![Alt text](image-url)</code>.</li><li>Both images and links can also use reference URLs, which can be defined anywhere in a Markdown document using this syntax: <code>[referenceName]: url</code>.</li><li>Both ordered lists (using numbers followed by a period (<code>.</code>) or right parenthesis (<code>)</code>) as bullets) and unordered lists (using either a dash (<code>-</code>), plus (<code>+</code>), or asterisk (<code>*</code>) as bullets) are supported.</li><li>Ordered lists start from the index of the first entry</li><li>Nested lists are supported as well, by indenting any part of a list that should be nested within its parent.</li><li>Horizontal lines can be placed using either three asterisks (<code>***</code>) or three dashes (<code>---</code>) on a new line.</li><li>HTML can be inlined both at the root level, and within text paragraphs.</li><li>Blockquotes can be created by placing a greater-than arrow at the start of a line, like this: <code>&gt; This is a blockquote</code>.</li></ul><p>Please note that, being a very young implementation, Ink does not fully support all Markdown specs, such as <a href="https://commonmark.org">CommonMark</a>. Ink definitely aims to cover as much ground as possible, and to include support for the most commonly used Markdown features, but if complete CommonMark compatibility is what you’re looking for — then you might want to check out tools like <a href="https://github.com/commonmark/cmark">CMark</a>.</p><h2>Internal architecture</h2><p>Ink uses a highly modular <a href="https://www.swiftbysundell.com/articles/rule-based-logic-in-swift">rule-based</a> internal architecture, to enable new rules and formatting options to be added without impacting the system as a whole.</p><p>Each Markdown fragment is individually parsed and rendered by a type conforming to the internal <code>Readable</code> and <code>HTMLConvertible</code> protocols — such as <code>FormattedText</code>, <code>List</code>, and <code>Image</code>.</p><p>To parse a part of a Markdown document, each fragment type uses a <code>Reader</code> instance to read the Markdown string, and to make assertions about its structure. Errors are <a href="https://www.swiftbysundell.com/articles/using-errors-as-control-flow-in-swift">used as control flow</a> to signal whether a parsing operation was successful or not, which in turn enables the parent context to decide whether to advance the current <code>Reader</code> instance, or whether to rewind it.</p><p>A good place to start exploring Ink’s implementation is to look at the main <code>MarkdownParser</code> type’s <code>parse</code> method, and to then dive deeper into the various <code>Fragment</code> implementations, and the <code>Reader</code> type.</p><h2>Credits</h2><p>Ink was originally written by <a href="https://twitter.com/johnsundell">John Sundell</a> as part of the Publish suite of static site generation tools, which is used to build and generate <a href="https://swiftbysundell.com">Swift by Sundell</a>. The other tools that make up the Publish suite will also be open sourced soon.</p><p>The Markdown format was created by <a href="https://twitter.com/gruber">John Gruber</a>. You can find <a href="https://daringfireball.net/projects/markdown">more information about it here</a>.</p><h2>Contributions and support</h2><p>Ink is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Ink in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>Since this is a very young project, it’s likely to have many limitations and missing features, which is something that can really only be discovered and addressed as more people start using it. While Ink is used in production to render all of <a href="https://swiftbysundell.com">Swift by Sundell</a>, it’s recommended that you first try it out for your specific use case, to make sure it supports the features that you need.</p><p>This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Ink/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you’ll enjoy using <strong>Ink</strong>!</p>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/shellout</guid><title>🐚 ShellOut</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/shellout</link><pubDate>Fri, 24 Apr 2020 09:34:00 +0300</pubDate><content:encoded><![CDATA[<h1>🐚 ShellOut</h1><p>Welcome to ShellOut, a simple package that enables you to easily “shell out” from a Swift script or command line tool.</p><p>Even though you can accomplish most of the tasks you need to do in native Swift code, sometimes you need to invoke the power of the command line from a script or tool - and this is exactly what ShellOut makes so simple.</p><h2>Usage</h2><p>Just call <code>shellOut()</code>, and specify what command you want to run, along with any arguments you want to pass:</p><pre><code><span class="keyword">let</span> output = <span class="keyword">try</span> <span class="call">shellOut</span>(to: <span class="string">"echo"</span>, arguments: [<span class="string">"Hello world"</span>])
+<span class="call">print</span>(output) <span class="comment">// Hello world</span>
+</code></pre><p>You can also easily run a series of commands at once, optionally at a given path:</p><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: [<span class="string">"mkdir NewFolder"</span>, <span class="string">"echo \"Hello again\" &gt; NewFolder/File"</span>], at: <span class="string">"~/CurrentFolder"</span>)
+<span class="keyword">let</span> output = <span class="keyword">try</span> <span class="call">shellOut</span>(to: <span class="string">"cat File"</span>, at: <span class="string">"~/CurrentFolder/NewFolder"</span>)
+<span class="call">print</span>(output) <span class="comment">// Hello again</span>
+</code></pre><p>In case of an error, ShellOut will automatically read <code>STDERR</code> and format it nicely into a typed Swift error:</p><pre><code><span class="keyword">do</span> {
+    <span class="keyword">try</span> <span class="call">shellOut</span>(to: <span class="string">"totally-invalid"</span>)
+} <span class="keyword">catch</span> {
+    <span class="keyword">let</span> error = error <span class="keyword">as</span>! <span class="type">ShellOutError</span>
+    <span class="call">print</span>(error.<span class="property">message</span>) <span class="comment">// Prints STDERR</span>
+    <span class="call">print</span>(error.<span class="property">output</span>) <span class="comment">// Prints STDOUT</span>
+}
+</code></pre><h2>Pre-defined commands</h2><p>Another way to use ShellOut is by executing pre-defined commands, that enable you to easily perform common tasks without having to construct commands using strings. It also ships with a set of such pre-defined commands for common tasks, such as using Git, manipulating the file system and using tools like <a href="https://github.com/JohnSundell/Marathon">Marathon</a>, <a href="https://cocoapods.org">CocoaPods</a> and <a href="https://fastlane.tools">fastlane</a>.</p><h3>Use Git</h3><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitInit</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitClone</span>(url: repositoryURL))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitCommit</span>(message: <span class="string">"A scripted commit!"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitPush</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitPull</span>(remote: <span class="string">"origin"</span>, branch: <span class="string">"release"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitSubmoduleUpdate</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">gitCheckout</span>(branch: <span class="string">"my-feature"</span>))
+</code></pre><h3>Handle files, folders and symlinks</h3><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">createFolder</span>(named: <span class="string">"folder"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">createFile</span>(named: <span class="string">"file"</span>, contents: <span class="string">"Hello world"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">moveFile</span>(from: <span class="string">"path/a"</span>, to: <span class="string">"path/b"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">copyFile</span>(from: <span class="string">"path/a"</span>, to: <span class="string">"path/b"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">openFile</span>(at: <span class="string">"Project.xcodeproj"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">readFile</span>(at: <span class="string">"Podfile"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">removeFile</span>(from: <span class="string">"path/a"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">createSymlink</span>(to: <span class="string">"target"</span>, at: <span class="string">"link"</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">expandSymlink</span>(at: <span class="string">"link"</span>))
+</code></pre><p><em>For a more powerful and object-oriented way to handle Files &amp; Folders in Swift, check out <a href="https://github.com/JohnSundell/Files">Files</a></em></p><h3>Use <a href="https://github.com/JohnSundell/Marathon">Marathon</a></h3><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">runMarathonScript</span>(at: <span class="string">"~/scripts/MyScript"</span>, arguments: [<span class="string">"One"</span>, <span class="string">"Two"</span>]))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">updateMarathonPackages</span>())
+</code></pre><h3>Use <a href="https://github.com/apple/swift-package-manager">The Swift Package Manager</a></h3><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">createSwiftPackage</span>(withType: .<span class="dotAccess">executable</span>))
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">updateSwiftPackages</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">generateSwiftPackageXcodeProject</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">buildSwiftPackage</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">testSwiftPackage</span>())
+</code></pre><h3>Use <a href="https://fastlane.tools">fastlane</a></h3><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">runFastlane</span>(usingLane: <span class="string">"appstore"</span>))
+</code></pre><h3>Use <a href="https://cocoapods.org">CocoaPods</a></h3><pre><code><span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">updateCocoaPods</span>())
+<span class="keyword">try</span> <span class="call">shellOut</span>(to: .<span class="call">installCocoaPods</span>())
+</code></pre><p>Don't see what you're looking for in the list above? You can easily define your own commands using <code>ShellOutCommand</code>. If you've made a command you think should be included among the built-in ones, feel free to <a href="https://github.com/JohnSundell/ShellOut/pull/new/master">open a PR</a>!</p><h2>Installation</h2><h3>For scripts</h3><ul><li>Install <a href="https://github.com/johnsundell/marathon">Marathon</a>.</li><li>Add ShellOut to Marathon using <code>$ marathon add https://github.com/JohnSundell/ShellOut.git</code>.</li><li>Alternatively, add <code>https://github.com/JohnSundell/ShellOut.git</code> to your <code>Marathonfile</code>.</li><li>Write your script, then run it using <code>$ marathon run yourScript.swift</code>.</li></ul><h3>For command line tools</h3><ul><li>Add <code>.package(url: "https://github.com/JohnSundell/ShellOut.git", from: "2.0.0")</code> to your <code>Package.swift</code> file's <code>dependencies</code>.</li><li>Update your packages using <code>$ swift package update</code>.</li></ul><h2>Help, feedback or suggestions?</h2><ul><li><a href="https://github.com/JohnSundell/ShellOut/issues/new">Open an issue</a> if you need help, if you found a bug, or if you want to discuss a feature request.</li><li><a href="https://github.com/JohnSundell/ShellOut/pull/new/master">Open a PR</a> if you want to make some change to ShellOut.</li><li>Contact <a href="https://twitter.com/johnsundell">@johnsundell on Twitter</a> for discussions, news &amp; announcements about ShellOut &amp; other projects.</li></ul>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/sweep</guid><title>Sweep (lib)</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/sweep</link><pubDate>Fri, 24 Apr 2020 09:34:00 +0300</pubDate><content:encoded><![CDATA[<h1>Sweep (lib)</h1><p align="center">
+    <img src="Logo.png" width="500" max-width="90%" alt="Sweep" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Sweep</strong> — a powerful and fast, yet easy to use, Swift string scanning library. Scan any string for substrings appearing between two sets of characters — for example to parse out identifiers or metadata from a string of user-defined text.</p><p>Sweep can be dropped into a project as a general-purpose string scanning algorithm, or act as the base for custom, more high-level scanning implementations. It aims to complement the Swift standard library’s built-in string handling APIs, both in terms of its design, and also how its implemented in an efficient way in line with Swift’s various string conventions.</p><h2>Examples</h2><p>The easiest way to start using Sweep is to call the <code>substrings</code> method that it adds on top of <code>StringProtocol</code> — meaning that you can use it on both “normal” strings and <code>Substring</code> values.</p><p>Here’s an example in which we scan a string for HTML tags, and both identify the names of all tags that appear in the string, and also any text that should be rendered in bold:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> html = <span class="string">"&lt;p&gt;Hello, &lt;b&gt;this is bold&lt;/b&gt;, right?&lt;/p&gt;"</span>
+<span class="keyword">let</span> tags = html.<span class="call">substrings</span>(between: <span class="string">"&lt;"</span>, and: <span class="string">"&gt;"</span>)
+<span class="call">print</span>(tags) <span class="comment">// ["p", "b", "/b", "/p"]</span>
+
+<span class="keyword">let</span> boldText = html.<span class="call">substrings</span>(between: <span class="string">"&lt;b&gt;"</span>, and: <span class="string">"&lt;/b&gt;"</span>)
+<span class="call">print</span>(boldText) <span class="comment">// ["this is bold"]</span>
+</code></pre><p>Sweep can also scan for different patterns, such as a prefix appearing at the start of the scanned string, or its end. Here we’re using those capabilities to identify headings in a string of Markdown-formatted text:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> markdown = <span class="string">"""
+## Section 1
+
+Text
+
+## Section 2
+"""</span>
+
+<span class="keyword">let</span> headings = markdown.<span class="call">substrings</span>(between: [.<span class="call">prefix</span>(<span class="string">"## "</span>), <span class="string">"\n## "</span>],
+                                   and: [.<span class="dotAccess">end</span>, <span class="string">"\n"</span>])
+
+<span class="call">print</span>(headings) <span class="comment">// ["Section 1", "Section 2"]</span>
+</code></pre><p>Since Sweep was designed to fit right in alongside Swift’s built-in string APIs, it lets us compose more powerful string scanning algorithms using both built-in functionality and the APIs that Sweep adds — such as here where we’re parsing out an array of tags from a string written using a custom syntax:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> text = <span class="string">"{{tags: swift, programming, xcode}}"</span>
+<span class="keyword">let</span> tagStrings = text.<span class="call">substrings</span>(between: <span class="string">"{{tags: "</span>, and: <span class="string">"}}"</span>)
+<span class="keyword">let</span> tags = tagStrings.<span class="call">flatMap</span> { $0.<span class="call">components</span>(separatedBy: <span class="string">", "</span>) }
+<span class="call">print</span>(tags) <span class="comment">// ["swift", "programming", "xcode"]</span>
+</code></pre><p>Sweep was also designed to be highly efficient, and only makes a single pass through each string that it scans — regardless of how many different patterns you wish to scan for. In this example, we’re using two custom matchers to parse two pieces of metadata from a string:</p><pre><code><span class="keyword">import</span> Sweep
+
+<span class="keyword">let</span> text = <span class="string">"""
+url: https://swiftbysundell.com
+title: Swift by Sundell
+"""</span>
+
+<span class="keyword">var</span> urls = [<span class="type">URL</span>]()
+<span class="keyword">var</span> titles = [<span class="type">String</span>]()
+
+text.<span class="call">scan</span>(using: [
+    <span class="type">Matcher</span>(identifiers: [<span class="string">"url: "</span>], terminators: [<span class="string">"\n"</span>, .<span class="dotAccess">end</span>]) { match, range <span class="keyword">in
+        let</span> string = <span class="type">String</span>(match)
+        <span class="keyword">let</span> url = <span class="type">URL</span>(string: string)
+        url.<span class="call">flatMap</span> { urls.<span class="call">append</span>($0) }
+    },
+    <span class="type">Matcher</span>(identifiers: [<span class="string">"title: "</span>], terminators: [<span class="string">"\n"</span>, .<span class="dotAccess">end</span>]) { match, range <span class="keyword">in
+        let</span> string = <span class="type">String</span>(match)
+        titles.<span class="call">append</span>(string)
+    }
+])
+
+<span class="call">print</span>(urls) <span class="comment">// [https://swiftbysundell.com]</span>
+<span class="call">print</span>(titles) <span class="comment">// ["Swift by Sundell"]</span>
+</code></pre><p>Sweep is not only efficient in terms of complexity, it also has a very low memory overhead, thanks to it being built according to Swift’s modern string conventions — making full use of types like <code>Substring</code> and <code>String.Index</code>, and avoiding unnecessary copying and mutations when performing its scanning.</p><h2>Installation</h2><p>Sweep is distributed as a Swift package, and it’s recommended to install it using <a href="https://github.com/apple/swift-package-manager">the Swift Package Manager</a>, by declaring it as a dependency in your project’s <code>Package.swift</code> file:</p><pre><code>.<span class="call">package</span>(url: <span class="string">"https://github.com/JohnSundell/Sweep"</span>, from: <span class="string">"0.1.0"</span>)
+</code></pre><p>For more information, please see the <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">Swift Package Manager documentation</a>.</p><h2>Contributions &amp; support</h2><p>Sweep is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Sweep in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation (it all fits <a href="https://github.com/JohnSundell/Sweep/blob/master/Sources/Sweep/Sweep.swift">in a single file</a>!), so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>To learn more about the principles used to implement Sweep, check out <em><a href="https://www.swiftbysundell.com/posts/string-parsing-in-swift">“String parsing in Swift”</a></em> on Swift by Sundell.</p><p>Sweep does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Sweep/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you enjoy using Sweep! 😀</p>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/codeextented</guid><title>Codextended (lib)</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/codeextented</link><pubDate>Fri, 24 Apr 2020 09:33:00 +0300</pubDate><content:encoded><![CDATA[<h1>Codextended (lib)</h1><p align="center">
+    <img src="Logo.png" width="480” max-width="90%" alt="Codextended" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Codextended</strong> — a suite of extensions that aims to make Swift’s <code>Codable</code> API easier to use by giving it type inference-powered capabilities and conveniences. It’s not a wrapper, nor is it a brand new framework, instead it augments <code>Codable</code> directly in a very lightweight way.</p><h2>Codable is awesome!</h2><p>No third-party serialization framework can beat the convenience of <code>Codable</code>. Since it’s built in, it can both leverage the compiler to automatically synthesize all serialization code needed in many situations, and it can also be used as a common bridge between multiple different modules — without having to introduce any shared dependencies.</p><p>However, once some form of customization is needed — for example to transform parts of the decoded data, or to provide default values for certain keys — the standard <code>Codable</code> API starts to become <em>really</em> verbose. It also doesn’t take advantage of Swift’s robust type inference capabilities, which produces a lot of unnecessary boilerplate.</p><p>That’s what <strong>Codextended</strong> aims to fix.</p><h2>Examples</h2><p>Here are a few examples that demonstrate the difference between using “vanilla” <code>Codable</code> and the APIs that <strong>Codextended</strong> adds to it. The goal is to turn all common serialization operations into one-liners, rather than having to set up a ton of boilerplate.</p><h3>🏢 Top-level API</h3><p><strong>Codextended</strong> makes a few slight tweaks to the top-level API used to encode and decode values, making it possible to leverage type inference and use methods on the actual values that are being encoded or decoded.</p><p>🍨 With vanilla <code>Codable</code>:</p><pre><code><span class="comment">// Encoding</span>
+<span class="keyword">let</span> encoder = <span class="type">JSONEncoder</span>()
+<span class="keyword">let</span> data = <span class="keyword">try</span> encoder.<span class="call">encode</span>(value)
+
+<span class="comment">// Decoding</span>
+<span class="keyword">let</span> decoder = <span class="type">JSONDecoder</span>()
+<span class="keyword">let</span> article = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="type">Article</span>.<span class="keyword">self</span>, from: data)
+</code></pre><p>🦸‍♀️ With <strong>Codextended</strong>:</p><pre><code><span class="comment">// Encoding</span>
+<span class="keyword">let</span> data = <span class="keyword">try</span> value.<span class="call">encoded</span>()
+
+<span class="comment">// Decoding</span>
+<span class="keyword">let</span> article = <span class="keyword">try</span> data.<span class="call">decoded</span>() <span class="keyword">as</span> <span class="type">Article</span>
+
+<span class="comment">// Decoding when the type can be inferred</span>
+<span class="keyword">try</span> <span class="call">saveArticle</span>(data.<span class="call">decoded</span>())
+</code></pre><h3>🔑 Overriding the behavior for a single key</h3><p>While <code>Codable</code> is amazing as long as the serialized data’s format exactly matches the format of the Swift types that’ll use it — as soon as we need to make just a small tweak, things quickly go from really convenient to very verbose.</p><p>As an example, let’s just say that we want to provide a default value for one single property (without having to make it an optional, which would make it harder to handle in the rest of our code base). To do that, we need to completely manually implement our type’s decoding — like below for the <code>tags</code> property of an <code>Article</code> type.</p><p>🍨 With vanilla <code>Codable</code>:</p><pre><code><span class="keyword">struct</span> Article: <span class="type">Codable</span> {
+    <span class="keyword">enum</span> CodingKeys: <span class="type">CodingKey</span> {
+        <span class="keyword">case</span> title
+        <span class="keyword">case</span> body
+        <span class="keyword">case</span> footnotes
+        <span class="keyword">case</span> tags
+    }
+
+    <span class="keyword">var</span> title: <span class="type">String</span>
+    <span class="keyword">var</span> body: <span class="type">String</span>
+    <span class="keyword">var</span> footnotes: <span class="type">String</span>?
+    <span class="keyword">var</span> tags: [<span class="type">String</span>]
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">let</span> container = <span class="keyword">try</span> decoder.<span class="call">container</span>(keyedBy: <span class="type">CodingKeys</span>.<span class="keyword">self</span>)
+        title = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">title</span>)
+        body = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">body</span>)
+        footnotes = <span class="keyword">try</span> container.<span class="call">decodeIfPresent</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">footnotes</span>)
+        tags = (try? container.<span class="call">decode</span>([<span class="type">String</span>].<span class="keyword">self</span>, forKey: .<span class="dotAccess">tags</span>)) ?? []
+    }
+}
+</code></pre><p>🦸‍♂️ With <strong>Codextended</strong>:</p><pre><code><span class="keyword">struct</span> Article: <span class="type">Codable</span> {
+    <span class="keyword">var</span> title: <span class="type">String</span>
+    <span class="keyword">var</span> body: <span class="type">String</span>
+    <span class="keyword">var</span> footnotes: <span class="type">String</span>?
+    <span class="keyword">var</span> tags: [<span class="type">String</span>]
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        title = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"title"</span>)
+        body = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"body"</span>)
+        footnotes = <span class="keyword">try</span> decoder.<span class="call">decodeIfPresent</span>(<span class="string">"footnotes"</span>)
+        tags = (try? decoder.<span class="call">decode</span>(<span class="string">"tags"</span>)) ?? []
+    }
+}
+</code></pre><p><strong>Codextended</strong> includes decoding overloads both for <code>CodingKey</code>-based values and for string literals, so that we can pick the approach that’s the most appropriate/convenient for each given situation.</p><h3>📆 Using date formatters</h3><p><code>Codable</code> already comes with support for custom date formats through assigning a <code>DateFormatter</code> to either a <code>JSONEncoder</code> or <code>JSONDecoder</code>. However, requiring each call site to be aware of the specific date formats used for each type isn’t always great — so with <strong>Codextended</strong>, it’s easy for a type itself to pick what date format it needs to use.</p><p>That’s really convenient when working with third-party data, and we only want to customize the date format for some of our types, or when we want to produce more readable date strings when encoding a value.</p><p>🍨 With vanilla <code>Codable</code>:</p><pre><code><span class="keyword">struct</span> Bookmark: <span class="type">Codable</span> {
+    <span class="keyword">enum</span> CodingKeys: <span class="type">CodingKey</span> {
+        <span class="keyword">case</span> url
+        <span class="keyword">case</span> date
+    }
+
+    <span class="keyword">struct</span> DateCodingError: <span class="type">Error</span> {}
+
+    <span class="keyword">static let</span> dateFormatter = <span class="call">makeDateFormatter</span>()
+
+    <span class="keyword">var</span> url: <span class="type">URL</span>
+    <span class="keyword">var</span> date: <span class="type">Date</span>
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">let</span> container = <span class="keyword">try</span> decoder.<span class="call">container</span>(keyedBy: <span class="type">CodingKeys</span>.<span class="keyword">self</span>)
+        url = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">URL</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">url</span>)
+
+        <span class="keyword">let</span> dateString = <span class="keyword">try</span> container.<span class="call">decode</span>(<span class="type">String</span>.<span class="keyword">self</span>, forKey: .<span class="dotAccess">date</span>)
+
+        <span class="keyword">guard let</span> date = <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>.<span class="call">date</span>(from: dateString) <span class="keyword">else</span> {
+            <span class="keyword">throw</span> <span class="type">DateCodingError</span>()
+        }
+
+        <span class="keyword">self</span>.<span class="property">date</span> = date
+    }
+
+    <span class="keyword">func</span> encode(to encoder: <span class="type">Encoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">var</span> container = encoder.<span class="call">container</span>(keyedBy: <span class="type">CodingKeys</span>.<span class="keyword">self</span>)
+        <span class="keyword">try</span> container.<span class="call">encode</span>(url, forKey: .<span class="dotAccess">url</span>)
+
+        <span class="keyword">let</span> dateString = <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>.<span class="call">string</span>(from: date)
+        <span class="keyword">try</span> container.<span class="call">encode</span>(dateString, forKey: .<span class="dotAccess">date</span>)
+    }
+}
+</code></pre><p>🦹‍♀️ With <strong>Codextended</strong>:</p><pre><code><span class="keyword">struct</span> Bookmark: <span class="type">Codable</span> {
+    <span class="keyword">static let</span> dateFormatter = <span class="call">makeDateFormatter</span>()
+
+    <span class="keyword">var</span> url: <span class="type">URL</span>
+    <span class="keyword">var</span> date: <span class="type">Date</span>
+
+    <span class="keyword">init</span>(from decoder: <span class="type">Decoder</span>) <span class="keyword">throws</span> {
+        url = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"url"</span>)
+        date = <span class="keyword">try</span> decoder.<span class="call">decode</span>(<span class="string">"date"</span>, using: <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>)
+    }
+
+    <span class="keyword">func</span> encode(to encoder: <span class="type">Encoder</span>) <span class="keyword">throws</span> {
+        <span class="keyword">try</span> encoder.<span class="call">encode</span>(url, for: <span class="string">"url"</span>)
+        <span class="keyword">try</span> encoder.<span class="call">encode</span>(date, for: <span class="string">"date"</span>, using: <span class="type">Bookmark</span>.<span class="property">dateFormatter</span>)
+    }
+}
+</code></pre><p>Again, we could’ve chosen to use a <code>CodingKeys</code> enum above to represent our keys, rather than using inline strings.</p><h2>Mix and match</h2><p>Since <strong>Codextended</strong> is 100% implemented through extensions, you can easily mix and match it with “vanilla” <code>Codable</code> code within the same project. It also doesn’t change what makes <code>Codable</code> so great — the fact that it often doesn’t require any manual code at all, and that it can be used as a bridge between frameworks.</p><p>All it does is give <code>Codable</code> a <em>helping hand</em> when some form of customization is needed.</p><h2>Installation</h2><p>Since <strong>Codextended</strong> is implemented within a single file, the easiest way to use it is to simply drag and drop it into your Xcode project.</p><p>But if you wish to use a dependency manager, you can either use the <a href="https://github.com/apple/swift-package-manager">Swift Package Manager</a> by declaring <strong>Codextended</strong> as a dependency in your <code>Package.swift</code> file:</p><pre><code>.<span class="call">package</span>(url: <span class="string">"https://github.com/JohnSundell/Codextended"</span>, from: <span class="string">"0.1.0"</span>)
+</code></pre><p><em>For more information, see <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">the Swift Package Manager documentation</a>.</em></p><p>You can also use <a href="https://cocoapods.org">CocoaPods</a> by adding the following line to your <code>Podfile</code>:</p><pre><code>pod <span class="string">"Codextended"</span>
+</code></pre><h2>Contributions &amp; support</h2><p><strong>Codextended</strong> is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using <strong>Codextended</strong> in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation (it all fits <a href="https://github.com/JohnSundell/Codextended/blob/master/Sources/Codextended/Codextended.swift">in a single file</a>!), so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>To learn more about the principles used to implement <strong>Codextended</strong>, check out <em><a href="https://www.swiftbysundell.com/posts/type-inference-powered-serialization-in-swift">“Type inference-powered serialization in Swift”</a></em> on Swift by Sundell.</p><p>This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Codextended/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you’ll enjoy using <strong>Codextended</strong>! 😀</p>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/files</guid><title>Files (lib)</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/files</link><pubDate>Fri, 24 Apr 2020 09:33:00 +0300</pubDate><content:encoded><![CDATA[<h1>Files (lib)</h1><p align="center">
+    <img src="logo.png" width="300" max-width="50%" alt=“Files” />
+</p><p align="center">
+    <a href="https://dashboard.buddybuild.com/apps/5932f7d9b0c2b000015d6b79/build/latest?branch=master">
+        <img src="https://dashboard.buddybuild.com/api/statusImage?appID=5932f7d9b0c2b000015d6b79&branch=master&build=latest" alt="BuddyBuild" />
+    </a>
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://cocoapods.org/pods/Files">
+        <img src="https://img.shields.io/cocoapods/v/Files.svg" alt="CocoaPods" />
+    </a>
+    <a href="https://github.com/Carthage/Carthage">
+        <img src="https://img.shields.io/badge/carthage-compatible-4BC51D.svg?style=flat" alt="Carthage" />
+    </a>
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/contact-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Files</strong>, a compact library that provides a nicer way to handle <em>files</em> and <em>folders</em> in Swift. It’s primarily aimed at Swift scripting and tooling, but can also be embedded in applications that need to access the file system. It's essentially a thin wrapper around the <code>FileManager</code> APIs that <code>Foundation</code> provides.</p><h2>Features</h2><ul><li>[X] Modern, object-oriented API for accessing, reading and writing files &amp; folders.</li><li>[X] Unified, simple <code>do, try, catch</code> error handling.</li><li>[X] Easily construct recursive and flat sequences of files and folders.</li></ul><h2>Examples</h2><p>Iterate over the files contained in a folder:</p><pre><code><span class="keyword">for</span> file <span class="keyword">in try</span> <span class="type">Folder</span>(path: <span class="string">"MyFolder"</span>).<span class="property">files</span> {
+    <span class="call">print</span>(file.<span class="property">name</span>)
+}
+</code></pre><p>Rename all files contained in a folder:</p><pre><code><span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"MyFolder"</span>).<span class="property">files</span>.<span class="call">enumerated</span>().<span class="call">forEach</span> { (index, file) <span class="keyword">in
+    try</span> file.<span class="call">rename</span>(to: file.<span class="property">nameWithoutExtension</span> + <span class="string">"</span>\(index)<span class="string">"</span>)
+}
+</code></pre><p>Recursively iterate over all folders in a tree:</p><pre><code><span class="type">Folder</span>.<span class="property">home</span>.<span class="property">subfolders</span>.<span class="property">recursive</span>.<span class="call">forEach</span> { folder <span class="keyword">in</span>
+    <span class="call">print</span>(<span class="string">"Name :</span> \(folder.<span class="property">name</span>)<span class="string">, parent:</span> \(folder.<span class="property">parent</span>)<span class="string">"</span>)
+}
+</code></pre><p>Create, write and delete files and folders:</p><pre><code><span class="keyword">let</span> folder = <span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"/users/john/folder"</span>)
+<span class="keyword">let</span> file = <span class="keyword">try</span> folder.<span class="call">createFile</span>(named: <span class="string">"file.json"</span>)
+<span class="keyword">try</span> file.<span class="call">write</span>(<span class="string">"{\"hello\": \"world\"}"</span>)
+<span class="keyword">try</span> file.<span class="call">delete</span>()
+<span class="keyword">try</span> folder.<span class="call">delete</span>()
+</code></pre><p>Move all files in a folder to another:</p><pre><code><span class="keyword">let</span> originFolder = <span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"/users/john/folderA"</span>)
+<span class="keyword">let</span> targetFolder = <span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"/users/john/folderB"</span>)
+<span class="keyword">try</span> originFolder.<span class="property">files</span>.<span class="call">move</span>(to: targetFolder)
+</code></pre><p>Easy access to system folders:</p><pre><code><span class="type">Folder</span>.<span class="property">current</span>
+<span class="type">Folder</span>.<span class="property">root</span>
+<span class="type">Folder</span>.<span class="property">library</span>
+<span class="type">Folder</span>.<span class="property">temporary</span>
+<span class="type">Folder</span>.<span class="property">home</span>
+<span class="type">Folder</span>.<span class="property">documents</span>
+</code></pre><h2>Installation</h2><p>Files can be easily used in either a Swift script, a command line tool, or in an app for iOS, macOS, tvOS or Linux.</p><h3>Using the Swift Package Manager (preferred)</h3><p>To install Files for use in a Swift Package Manager-powered tool, script or server-side application, add Files as a dependency to your <code>Package.swift</code> file. For more information, please see the <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">Swift Package Manager documentation</a>.</p><pre><code>.<span class="call">package</span>(url: <span class="string">"https://github.com/JohnSundell/Files"</span>, from: <span class="string">"4.0.0"</span>)
+</code></pre><h3>Using CocoaPods or Carthage</h3><p>Please refer to <a href="https://cocoapods.org">CocoaPods’</a> or <a href="https://github.com/Carthage/Carthage">Carthage’s</a> own documentation for instructions on how to add dependencies using those tools.</p><h3>As a file</h3><p>Since all of Files is implemented within a single file, you can easily use it in any project by simply dragging the file <code>Files.swift</code> into your Xcode project.</p><h2>Backstory</h2><p>So, why was this made? As I've migrated most of my build tools and other scripts from languages like Bash, Ruby and Python to Swift, I've found myself lacking an easy way to deal with the file system. Sure, <code>FileManager</code> has a quite nice API, but it can be quite cumbersome to use because of its string-based nature, which makes simple scripts that move or rename files quickly become quite complex.</p><p>So, I made <strong>Files</strong>, to enable me to quickly handle files and folders, in an expressive way. And, since I love open source, I thought - why not package it up and share it with the community? :)</p><h2>Questions or feedback?</h2><p>Feel free to <a href="https://github.com/JohnSundell/Files/issues/new">open an issue</a>, or find me <a href="https://twitter.com/johnsundell">@johnsundell on Twitter</a>.</p>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/plot</guid><title>Plot (lib)</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/plot</link><pubDate>Fri, 24 Apr 2020 09:33:00 +0300</pubDate><content:encoded><![CDATA[<h1>Plot (lib)</h1><p align="center">
+    <img src="Logo.png" width="400" max-width="90%" alt="Plot" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Plot</strong>, a domain-specific language (DSL) for writing type-safe HTML, XML and RSS in Swift. It can be used to build websites, documents and feeds, as a templating tool, or as a renderer for higher-level components and tools. It’s primary focus is on static site generation and Swift-based web development.</p><p>Plot is used to build and render all of <a href="https://swiftbysundell.com">swiftbysundell.com</a>.</p><h2>Write HTML — in Swift!</h2><p>Plot enables you to write HTML using native, fully compiled Swift code, by modeling the HTML5 standard’s various elements as Swift APIs. The result is a very lightweight DSL that lets you build complete web pages in a highly expressive way:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(
+    .<span class="call">head</span>(
+        .<span class="call">title</span>(<span class="string">"My website"</span>),
+        .<span class="call">stylesheet</span>(<span class="string">"styles.css"</span>)
+    ),
+    .<span class="call">body</span>(
+        .<span class="call">div</span>(
+            .<span class="call">h1</span>(<span class="string">"My website"</span>),
+            .<span class="call">p</span>(<span class="string">"Writing HTML in Swift is pretty great!"</span>)
+        )
+    )
+)
+</code></pre><p>Looking at the above, it may at first seem like Plot simply maps each function call directly to an equivalent HTML element — and while that’s the case for <em>some</em> elements, Plot also inserts many kinds of highly valuable metadata automatically. For example, the above expression will result in this HTML:</p><pre><code>&lt;!<span class="type">DOCTYPE</span> html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;<span class="type">My</span> website&lt;/title&gt;
+        &lt;meta name=<span class="string">"twitter:title"</span> content=<span class="string">"My website"</span>/&gt;
+        &lt;meta name=<span class="string">"og:title"</span> content=<span class="string">"My website"</span>/&gt;
+        &lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"styles.css"</span> type=<span class="string">"text/css"</span>/&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div&gt;
+            &lt;h1&gt;<span class="type">My</span> website&lt;/h1&gt;
+            &lt;p&gt;<span class="type">Writing HTML</span> <span class="keyword">in</span> <span class="type">Swift</span> <span class="keyword">is</span> pretty great!&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>As you can see above, Plot added both all of the necessary attributes to load the requested CSS stylesheet, along with additional metadata for the page’s title as well — improving page rendering, social media sharing, and search engine optimization.</p><p>Plot ships with a very wide coverage of the HTML5 standard, enabling all sorts of elements to be defined using the same lightweight syntax — such as tables, lists, and inline text styling:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(
+    .<span class="call">body</span>(
+        .<span class="call">h2</span>(<span class="string">"Countries and their capitals"</span>),
+        .<span class="call">table</span>(
+            .<span class="call">tr</span>(.<span class="call">th</span>(<span class="string">"Country"</span>), .<span class="dotAccess">th</span>(<span class="string">"Capital"</span>)),
+            .<span class="call">tr</span>(.<span class="call">td</span>(<span class="string">"Sweden"</span>), .<span class="dotAccess">td</span>(<span class="string">"Stockholm"</span>)),
+            .<span class="call">tr</span>(.<span class="call">td</span>(<span class="string">"Japan"</span>), .<span class="dotAccess">td</span>(<span class="string">"Tokyo"</span>))
+        ),
+        .<span class="call">h2</span>(<span class="string">"List of "</span>, .<span class="dotAccess">strong</span>(<span class="string">"programming languages"</span>)),
+        .<span class="call">ul</span>(
+            .<span class="call">li</span>(<span class="string">"Swift"</span>),
+            .<span class="call">li</span>(<span class="string">"Objective-C"</span>),
+            .<span class="call">li</span>(<span class="string">"C"</span>)
+        )
+    )
+)
+</code></pre><p>Above we’re also using Plot’s powerful composition capabilities, which lets us express all sorts of HTML hierarchies by simply adding new elements as comma-separated values.</p><h2>Applying attributes</h2><p>Attributes can also be applied the exact same way as child elements are added, by simply adding another entry to an element’s comma-separated list of content. For example, here’s how an anchor element with both a CSS class and a URL can be defined:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(
+    .<span class="call">body</span>(
+        .<span class="call">a</span>(.<span class="call">class</span>(<span class="string">"link"</span>), .<span class="dotAccess">href</span>(<span class="string">"https://github.com"</span>), <span class="string">"GitHub"</span>)
+    )
+)
+</code></pre><p>The fact that attributes, elements and inline text are all defined the same way both makes Plot’s API easier to learn, and also enables a really fast and fluid typing experience — as you can simply type <code>.</code> within any context to keep defining new attributes and elements.</p><h2>Type safety built-in</h2><p>Plot makes heavy use of Swift’s advanced generics capabilities to not only make it <em>possible</em> to write HTML and XML using native code, but to also make that process completely type-safe as well.</p><p>All of Plot’s elements and attributes are implemented as context-bound <em>nodes</em>, which both enforces valid HTML semantics, and also enables Xcode and other IDEs to provide rich autocomplete suggestions when writing code using Plot’s DSL.</p><p>For example, above the <code>href</code> attribute was added to an <code>&lt;a&gt;</code> element, which is completely valid. However, if we instead attempted to add that same attribute to a <code>&lt;p&gt;</code> element, we’d get a compiler error:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    <span class="comment">// Compiler error: Referencing static method 'href' on
+    // 'Node' requires that 'HTML.BodyContext' conform to
+    // 'HTMLLinkableContext'.</span>
+    .<span class="call">p</span>(.<span class="call">href</span>(<span class="string">"https://github.com"</span>))
+))
+</code></pre><p>Plot also leverages the Swift type system to verify each document’s element structure as well. For example, within HTML lists (such as <code>&lt;ol&gt;</code> and <code>&lt;ul&gt;</code>), it’s only valid to place <code>&lt;li&gt;</code> elements — and if we break that rule, we’ll again get a compiler error:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    <span class="comment">// Compiler error: Member 'p' in 'Node&lt;HTML.ListContext&gt;'
+    // produces result of type 'Node&lt;Context&gt;', but context
+    // expects 'Node&lt;HTML.ListContext&gt;'.</span>
+    .<span class="call">ul</span>(.<span class="call">p</span>(<span class="string">"Not allowed"</span>))
+))
+</code></pre><p>This high degree of type safety both results in a really pleasant development experience, and that the HTML and XML documents created using Plot will have a much higher chance of being semantically correct — especially when compared to writing documents and markup using raw strings.</p><h2>Defining custom components</h2><p>The same context-bound <code>Node</code> architecture that gives Plot its high degree of type safety also enables more higher-level components to be defined, which can then be mixed and composed the exact same way as elements defined within Plot itself.</p><p>For example, let’s say that we’re building a news website using Plot, and that we’re rendering <code>NewsArticle</code> models in multiple places. Here’s how we could define a reusable <code>newsArticle</code> component that’s bound to the context of an HTML document’s <code>&lt;body&gt;</code>:</p><pre><code><span class="keyword">extension</span> <span class="type">Node</span> <span class="keyword">where</span> <span class="type">Context</span>: <span class="type">HTML</span>.<span class="type">BodyContext</span> {
+    <span class="keyword">static func</span> newsArticle(<span class="keyword">_</span> article: <span class="type">NewsArticle</span>) -&gt; <span class="type">Self</span> {
+        <span class="keyword">return</span> .<span class="call">article</span>(
+            .<span class="call">class</span>(<span class="string">"news"</span>),
+            .<span class="call">img</span>(.<span class="call">src</span>(article.<span class="property">imagePath</span>)),
+            .<span class="call">h1</span>(.<span class="call">text</span>(article.<span class="property">title</span>)),
+            .<span class="call">span</span>(
+                .<span class="call">class</span>(<span class="string">"description"</span>),
+                .<span class="call">text</span>(article.<span class="property">description</span>)
+            )
+        )
+    }
+}
+</code></pre><p>With the above in place, we can now render any of our <code>NewsArticle</code> models using the exact same syntax as we use for built-in elements:</p><pre><code><span class="keyword">func</span> newsArticlePage(for article: <span class="type">NewsArticle</span>) -&gt; <span class="type">HTML</span> {
+    <span class="keyword">return</span> <span class="type">HTML</span>(.<span class="call">body</span>(
+        .<span class="call">div</span>(
+            .<span class="call">class</span>(<span class="string">"wrapper"</span>),
+            .<span class="call">newsArticle</span>(article)
+        )
+    ))
+}
+</code></pre><p>It’s highly recommended that you use the above component-based approach as much as possible when building websites and documents with Plot — as doing so will let you build up a growing library of reusable components, which will most likely accelerate your overall workflow over time.</p><h2>Inline control flow</h2><p>Since Plot is focused on static site generation, it also ships with several control flow mechanisms that let you inline logic when using its DSL. For example, using the <code>.if()</code> command, you can optionally add a node only when a given condition is <code>true</code>:</p><pre><code><span class="keyword">let</span> rating: <span class="type">Rating</span> = ...
+
+<span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">if</span>(rating.<span class="property">hasEnoughVotes</span>,
+        .<span class="call">span</span>(<span class="string">"Average score:</span> \(rating.<span class="property">averageScore</span>)<span class="string">"</span>)
+    )
+))
+</code></pre><p>You can also attach an <code>else</code> clause to the <code>.if()</code> command as well, which will act as a fallback node to be displayed when the condition is <code>false</code>:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">if</span>(rating.<span class="property">hasEnoughVotes</span>,
+        .<span class="call">span</span>(<span class="string">"Average score:</span> \(rating.<span class="property">averageScore</span>)<span class="string">"</span>),
+        else: .<span class="call">span</span>(<span class="string">"Not enough votes yet."</span>)
+    )
+))
+</code></pre><p>Optional values can also be unwrapped inline using the <code>.unwrap()</code> command, which takes an optional to unwrap, and a closure used to transform its value into a node — for example to conditionally display a part of an HTML page only if a user is logged in:</p><pre><code><span class="keyword">let</span> user: <span class="type">User</span>? = <span class="call">loadUser</span>()
+
+<span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">unwrap</span>(user) {
+        .<span class="call">p</span>(<span class="string">"Hello,</span> \($0.<span class="property">name</span>)<span class="string">"</span>)
+    }
+))
+</code></pre><p>Finally, the <code>.forEach()</code> command can be used to transform any Swift <code>Sequence</code> into a group of nodes, which is incredibly useful when constructing lists:</p><pre><code><span class="keyword">let</span> names: [<span class="type">String</span>] = ...
+
+<span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">h2</span>(<span class="string">"People"</span>),
+    .<span class="call">ul</span>(.<span class="call">forEach</span>(names) {
+        .<span class="call">li</span>(.<span class="call">class</span>(<span class="string">"name"</span>), .<span class="dotAccess">text</span>($0))
+    })
+))
+</code></pre><p>Using the above control flow mechanisms, especially when combined with the approach of defining custom components, lets you build really flexible templates, documents and HTML pages — all in a completely type-safe way.</p><h2>Custom elements and attributes</h2><p>While Plot aims to cover as much of the standards associated with the document formats that it supports (see <a href="#compatibility-with-standards">“Compatibility with standards”</a> for more info), chances are that you’ll eventually encounter some form of element or attribute that Plot doesn’t yet cover.</p><p>Thankfully, Plot also makes it trivial to define custom elements and attributes — which is both useful when building more free-form XML documents, and as an <em>“escape hatch”</em> when Plot does not yet support a given part of a standard:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">element</span>(named: <span class="string">"custom"</span>, text: <span class="string">"Hello..."</span>),
+    .<span class="call">p</span>(
+        .<span class="call">attribute</span>(named: <span class="string">"custom"</span>, value: <span class="string">"...world!"</span>)
+    )
+))
+</code></pre><p>While the above APIs are great for constructing one-off custom elements, or for temporary working around a limitation in Plot’s built-in functionality, it’s (in most cases) recommended to instead either:</p><ul><li><a href="CONTRIBUTING.md#adding-a-new-node-type">Add and submit</a> the missing API if it’s for an element or attribute that Plot should ideally cover.</li><li>Define your own type-safe elements and attributes the same way Plot does — by first extending the relevant document format in order to add your own context type, and then extending the <code>Node</code> type with your own DSL APIs:</li></ul><pre><code><span class="keyword">extension</span> <span class="type">XML</span> {
+    <span class="keyword">enum</span> ProductContext {}
+}
+
+<span class="keyword">extension</span> <span class="type">Node</span> <span class="keyword">where</span> <span class="type">Context</span> == <span class="type">XML</span>.<span class="type">DocumentContext</span> {
+    <span class="keyword">static func</span> product(<span class="keyword">_</span> nodes: <span class="type">Node</span>&lt;<span class="type">XML</span>.<span class="type">ProductContext</span>&gt;...) -&gt; <span class="type">Self</span> {
+        .<span class="call">element</span>(named: <span class="string">"product"</span>, nodes: nodes)
+    }
+}
+
+<span class="keyword">extension</span> <span class="type">Node</span> <span class="keyword">where</span> <span class="type">Context</span> == <span class="type">XML</span>.<span class="type">ProductContext</span> {
+    <span class="keyword">static func</span> name(<span class="keyword">_</span> name: <span class="type">String</span>) -&gt; <span class="type">Self</span> {
+        .<span class="call">element</span>(named: <span class="string">"name"</span>, text: name)
+    }
+
+    <span class="keyword">static func</span> isAvailable(<span class="keyword">_</span> bool: <span class="type">Bool</span>) -&gt; <span class="type">Self</span> {
+        .<span class="call">attribute</span>(named: <span class="string">"available"</span>, value: <span class="type">String</span>(bool))
+    }
+}
+</code></pre><p>The above may at first seem like unnecessary busywork, but just like Plot itself, it can really improve the stability and predictability of your custom documents going forward.</p><h2>Rendering a document</h2><p>Once you’ve finished constructing a document using Plot’s DSL, call the <code>render</code> method to render it into a <code>String</code>, which can optionally be indented using either tabs or spaces:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(...)
+
+<span class="keyword">let</span> nonIndentedString = html.<span class="call">render</span>()
+<span class="keyword">let</span> spacesIndentedString = html.<span class="call">render</span>(indentedBy: .<span class="call">spaces</span>(<span class="number">4</span>))
+<span class="keyword">let</span> tabsIndentedString = html.<span class="call">render</span>(indentedBy: .<span class="call">tabs</span>(<span class="number">1</span>))
+</code></pre><p>Individual nodes can also be rendered independently, which makes it possible to use Plot to construct just a single part of a larger document:</p><pre><code><span class="keyword">let</span> header = <span class="type">Node</span>.<span class="call">header</span>(
+    .<span class="call">h1</span>(<span class="string">"Title"</span>),
+    .<span class="call">span</span>(<span class="string">"Description"</span>)
+)
+
+<span class="keyword">let</span> string = header.<span class="call">render</span>()
+</code></pre><p>Plot was built with performance in mind, so regardless of how you render a document, the goal is for that rendering process to be as fast as possible — with very limited node tree traversal and as little string copying and interpolation as possible.</p><h2>RSS feeds, podcasting, and site maps</h2><p>Besides HTML and free-form XML, Plot also ships with DSL APIs for constructing RSS and podcast feeds, as well as SiteMap XMLs for search engine indexing.</p><p>While these APIs are most likely only relevant when building tools and custom generators (the upcoming static site generator Publish includes implementations of all of these formats), they provide the same level of type safety as when building HTML pages using Plot:</p><pre><code><span class="keyword">let</span> rss = <span class="type">RSS</span>(
+    .<span class="call">item</span>(
+        .<span class="call">guid</span>(<span class="string">"https://mysite.com/post"</span>, .<span class="dotAccess">isPermaLink</span>(<span class="keyword">true</span>)),
+        .<span class="call">title</span>(<span class="string">"My post"</span>),
+        .<span class="call">link</span>(<span class="string">"https://mysite.com/post"</span>)
+    )
+)
+
+<span class="keyword">let</span> podcastFeed = <span class="type">PodcastFeed</span>(
+    .<span class="call">title</span>(<span class="string">"My podcast"</span>),
+    .<span class="call">owner</span>(
+        .<span class="call">name</span>(<span class="string">"John Appleseed"</span>),
+        .<span class="call">email</span>(<span class="string">"john.appleseed@url.com"</span>)
+    ),
+    .<span class="call">item</span>(
+        .<span class="call">title</span>(<span class="string">"My first episode"</span>),
+        .<span class="call">audio</span>(
+            url: <span class="string">"https://mycdn.com/episode.mp3"</span>,
+            byteSize: <span class="number">79295410</span>,
+            title: <span class="string">"My first episode"</span>
+        )
+    )
+)
+
+<span class="keyword">let</span> siteMap = <span class="type">SiteMap</span>(
+    .<span class="call">url</span>(
+        .<span class="call">loc</span>(<span class="string">"https://mysite.com/post"</span>),
+        .<span class="call">lastmod</span>(<span class="type">Date</span>()),
+        .<span class="call">changefreq</span>(.<span class="dotAccess">daily</span>),
+        .<span class="call">priority</span>(<span class="number">1</span>)
+    )
+)
+</code></pre><p>For more information about what data is required to build a podcast feed, see <a href="https://itunespartner.apple.com/podcasts">Apple’s podcasting guide</a>, and for more information about the SiteMap format, see <a href="https://www.sitemaps.org/protocol.html">its official spec</a>.</p><h2>Installation</h2><p>Plot is distributed using the <a href="https://swift.org/package-manager">Swift Package Manager</a>. To install it into a project, simply add it as a dependency within your <code>Package.swift</code> manifest:</p><pre><code><span class="keyword">let</span> package = <span class="type">Package</span>(
+    ...
+    dependencies: [
+        .<span class="call">package</span>(url: <span class="string">"https://github.com/johnsundell/plot.git"</span>, from: <span class="string">"0.1.0"</span>)
+    ],
+    ...
+)
+</code></pre><p>Then import Plot wherever you’d like to use it:</p><pre><code><span class="keyword">import</span> Plot
+</code></pre><p>For more information on how to use the Swift Package Manager, check out <a href="https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager">this article</a>, or <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">its official documentation</a>.</p><h2>Navigating Plot’s API and implementation</h2><p>Plot consists of four core parts, that together make up both its DSL and its overall document rendering API:</p><ul><li><a href="Sources/Plot/API/Node.swift"><code>Node</code></a> is the core building block for all elements and attributes within any Plot document. It can represent elements and attributes, as well as text content and groups of nodes. Each node is bound to a <code>Context</code> type, which determines which kind of DSL APIs that it gets access to (for example <code>HTML.BodyContext</code> for nodes placed within the <code>&lt;body&gt;</code> of an HTML page).</li><li><a href="Sources/Plot/API/Element.swift"><code>Element</code></a> represents an element, and can either be opened and closed using two separate tags (like <code>&lt;body&gt;&lt;/body&gt;</code>) or self-closed (like <code>&lt;img/&gt;</code>). You normally don’t have to interact with this type when using Plot, since you can create instances of it through its DSL.</li><li><a href="Sources/Plot/API/Attribute.swift"><code>Attribute</code></a> represents an attribute attached to an element, such as the <code>href</code> of an <code>&lt;a&gt;</code> element, or the <code>src</code> of an <code>&lt;img&gt;</code> element. You can either construct <code>Attribute</code> values through its initializer, or through the DSL, using the <code>.attribute()</code> command.</li><li><a href="Sources/Plot/API/Document.swift"><code>Document</code> and <code>DocumentFormat</code></a> represent documents of a given format, such as <code>HTML</code>, <code>RSS</code> and <code>PodcastFeed</code>. These are the top level types that you use in order to start a document building session using Plot’s DSL.</li></ul><p>Plot makes heavy use of a technique known as <em><a href="https://www.swiftbysundell.com/articles/phantom-types-in-swift">Phantom Types</a></em>, which is when types are used as “markers” for the compiler, to be able to enforce type safety through <a href="https://www.swiftbysundell.com/articles/using-generic-type-constraints-in-swift-4">generic constraints</a>. Both <code>DocumentFormat</code>, and the <code>Context</code> of a node, element or attribute, are used this way — as these types are never instantiated, but rather just there to associate their values with a given context or format.</p><p>Plot also uses a very <a href="https://www.swiftbysundell.com/articles/lightweight-api-design-in-swift">lightweight API design</a>, minimizing external argument labels in favor of reducing the amount of syntax needed to render a document — giving its API a very “DSL-like” design.</p><h2>Compatibility with standards</h2><p>Plot’s ultimate goal to be fully compatible with all standards that back the document formats that it supports. However, being a very young project, it will most likely need the community’s help to move it closer to that goal.</p><p>The following standards are intended to be covered by Plot’s DSL:</p><ul><li><a href="https://html.spec.whatwg.org">HTML 5.0</a></li><li><a href="https://www.w3.org/TR/REC-xml">XML 1.0</a></li><li><a href="https://validator.w3.org/feed/docs/rss2.html">RSS 2.0</a></li><li><a href="https://help.apple.com/itc/podcasts_connect/#/itcbaf351599">Apple’s RSS extensions for podcasts</a></li><li><a href="https://www.sitemaps.org/protocol.html">The Sitemaps XML format</a></li></ul><p>If you discover an element or attribute that’s missing, please <a href="CONTRIBUTING.md#adding-a-new-node-type">add it</a> and open a Pull Request with that addition.</p><h2>Credits, alternatives and focus</h2><p>Plot was originally written by <a href="https://twitter.com/johnsundell">John Sundell</a> as part of the Publish suite of static site generation tools, which is used to build and generate <a href="https://swiftbysundell.com">Swift by Sundell</a>. That suite also includes the Markdown parser <a href="https://github.com/JohnSundell/Ink">Ink</a>, as well as <a href="https://github.com/JohnSundell/Publish">Publish</a> itself.</p><p>The idea of using Swift to generate HTML has also been explored by many other people and projects in the community, some of them similar to Plot, some of them completely different. For example <a href="https://github.com/vapor/leaf">Leaf</a> by <a href="https://vapor.codes">Vapor</a>, <a href="https://github.com/pointfreeco/swift-html">swift-html</a> by <a href="https://www.pointfree.co">Point-Free</a>, and the <a href="https://github.com/objcio/swift-talk-backend">Swift Talk backend</a> by <a href="https://www.objc.io">objc.io</a>. The fact that there’s a lot of simultaneous innovation within this area is a great thing — since all of these tools (including Plot) have made different decisions around their overall API design and scope, which lets each developer pick the tool that best fits their individual taste and needs (or perhaps build yet another one?).</p><p>Plot’s main focus is on Swift-based static site generation, and on supporting a wide range of formats used when building websites, including RSS and podcast feeds. It’s also tightly integrated with the upcoming Publish static site generator, and was built to enable Publish to be as fast and flexible as possible, without having to take on any third-party dependencies. It was open sourced as a separate project both from an architectural perspective, and to enable other tools to be built on top of it without having to depend on Publish.</p><h2>Contributions and support</h2><p>Plot is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Plot in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>Since this is a very young project, it’s likely to have many limitations and missing features, which is something that can really only be discovered and addressed as more people start using it. While Plot is used in production to build and render all of <a href="https://swiftbysundell.com">Swift by Sundell</a>, it’s recommended that you first try it out for your specific use case, to make sure it supports the features that you need.</p><p>This project does <a href="CONTRIBUTING.md#bugs-feature-requests-and-support">not come with GitHub Issues-based support</a>, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Plot/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there. See <a href="CONTRIBUTING.md">Plot’s contribution guide</a> for more information about how to contribute to this project.</p><p>Hope you’ll enjoy using Plot!</p>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/about/publish</guid><title>Publish (lib)</title><description>A description of my first post.</description><link>https://trampampam.github.io/about/publish</link><pubDate>Fri, 24 Apr 2020 09:33:00 +0300</pubDate><content:encoded><![CDATA[<h1>Publish (lib)</h1><p align="center">
+    <img src="Logo.png" width="400" max-width="90%" alt="Publish" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Publish</strong>, a static site generator built specifically for Swift developers. It enables entire websites to be built using Swift, and supports themes, plugins and tons of other powerful customization options.</p><p>Publish is used to build all of <a href="https://swiftbysundell.com">swiftbysundell.com</a>.</p><h2>Websites as Swift packages</h2><p>When using Publish, each website is defined as a Swift package, which acts as the configuration as to how the website should be generated and deployed — all using native, type-safe Swift code. For example, here’s what the configuration for a food recipe website might look like:</p><pre><code><span class="keyword">struct</span> DeliciousRecipes: <span class="type">Website</span> {
+    <span class="keyword">enum</span> SectionID: <span class="type">String</span>, <span class="type">WebsiteSectionID</span> {
+        <span class="keyword">case</span> recipes
+        <span class="keyword">case</span> links
+        <span class="keyword">case</span> about
+    }
+
+    <span class="keyword">struct</span> ItemMetadata: <span class="type">WebsiteItemMetadata</span> {
+        <span class="keyword">var</span> ingredients: [<span class="type">String</span>]
+        <span class="keyword">var</span> preparationTime: <span class="type">TimeInterval</span>
+    }
+
+    <span class="keyword">var</span> url = <span class="type">URL</span>(string: <span class="string">"https://cooking-with-john.com"</span>)!
+    <span class="keyword">var</span> name = <span class="string">"Delicious Recipes"</span>
+    <span class="keyword">var</span> description = <span class="string">"Many very delicious recipes."</span>
+    <span class="keyword">var</span> language: <span class="type">Language</span> { .<span class="dotAccess">english</span> }
+    <span class="keyword">var</span> imagePath: <span class="type">Path</span>? { <span class="string">"images/logo.png"</span> }
+}
+</code></pre><p>Each website built using Publish can freely decide what kind of sections and metadata that it wants to support. Above, we’ve added three sections — <em>Recipes</em>, <em>Links</em>, and <em>About</em> — which can then contain any number of items. We’ve also added support for our own, site-specific item metadata through the <code>ItemMetadata</code> type, which we’ll be able to use in a fully type-safe manner all throughout our publishing process.</p><h2>Start out simple, and customize when needed</h2><p>While Publish offers a really powerful API that enables almost every aspect of the website generation process to be customized and tweaked, it also ships with a suite of convenience APIs that aims to make it as quick and easy as possible to get started.</p><p>To start generating the <em>Delicious Recipes</em> website we defined above, all we need is a single line of code, that tells Publish which theme to use to generate our website’s HTML:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(withTheme: .<span class="dotAccess">foundation</span>)
+</code></pre><p><em>Not only does the above call render our website’s HTML, it also generates an RSS feed, a site map, and more.</em></p><p>Above we’re using Publish’s built-in Foundation theme, which is a very basic theme mostly provided as a starting point, and as an example of how Publish themes may be built. We can of course at any time replace that theme with our own, custom one, which can include any sort of HTML and resources that we’d like.</p><p>By default, Publish will generate a website’s content based on Markdown files placed within that project’s <code>Content</code> folder, but any number of content items and custom pages can also be added programmatically.</p><p><strong>Publish supports three types of content:</strong></p><p><strong>Sections</strong>, which are created based on the members of each website’s <code>SectionID</code> enum. Each section both has its own HTML page, and can also act as a container for a list of <strong>Items</strong>, which represent the nested HTML pages within that section. Finally, <strong>Pages</strong> provide a way to build custom free-form pages that can be placed into any kind of folder hierarchy.</p><p>Each <code>Section</code>, <code>Item</code>, and <code>Page</code> can define its own set of Content — which can range from text (like titles and descriptions), to HTML, audio, video and various kinds of metadata.</p><p>Here’s how we could extend our basic <code>publish()</code> call from before to inject our own custom publishing pipeline — which enables us to define new items, modify sections, and much more:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(
+    withTheme: .<span class="dotAccess">foundation</span>,
+    additionalSteps: [
+        <span class="comment">// Add an item programmatically</span>
+        .<span class="call">addItem</span>(<span class="type">Item</span>(
+            path: <span class="string">"my-favorite-recipe"</span>,
+            sectionID: .<span class="dotAccess">recipes</span>,
+            metadata: <span class="type">DeliciousRecipes</span>.<span class="type">ItemMetadata</span>(
+                ingredients: [<span class="string">"Chocolate"</span>, <span class="string">"Coffee"</span>, <span class="string">"Flour"</span>],
+                preparationTime: <span class="number">10</span> * <span class="number">60</span>
+            ),
+            tags: [<span class="string">"favorite"</span>, <span class="string">"featured"</span>],
+            content: <span class="type">Content</span>(
+                title: <span class="string">"Check out my favorite recipe!"</span>
+            )
+        )),
+        <span class="comment">// Add default titles to all sections</span>
+        .<span class="call">step</span>(named: <span class="string">"Default section titles"</span>) { context <span class="keyword">in</span>
+            context.<span class="call">mutateAllSections</span> { section <span class="keyword">in
+                guard</span> section.<span class="property">title</span>.<span class="property">isEmpty</span> <span class="keyword">else</span> { <span class="keyword">return</span> }
+
+                <span class="keyword">switch</span> section.<span class="property">id</span> {
+                <span class="keyword">case</span> .<span class="dotAccess">recipes</span>:
+                    section.<span class="property">title</span> = <span class="string">"My recipes"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">links</span>:
+                    section.<span class="property">title</span> = <span class="string">"External links"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">about</span>:
+                    section.<span class="property">title</span> = <span class="string">"About this site"</span>
+                }
+            }
+        }
+    ]
+)
+</code></pre><p>Of course, defining all of a program’s code in one single place is rarely a good idea, so it’s recommended to split up a website’s various generation operations into clearly separated steps — which can be defined by extending the <code>PublishingStep</code> type with static properties or methods, like this:</p><pre><code><span class="keyword">extension</span> <span class="type">PublishingStep</span> <span class="keyword">where</span> <span class="type">Site</span> == <span class="type">DeliciousRecipes</span> {
+    <span class="keyword">static func</span> addDefaultSectionTitles() -&gt; <span class="type">Self</span> {
+        .<span class="call">step</span>(named: <span class="string">"Default section titles"</span>) { context <span class="keyword">in</span>
+            context.<span class="call">mutateAllSections</span> { section <span class="keyword">in
+                guard</span> section.<span class="property">title</span>.<span class="property">isEmpty</span> <span class="keyword">else</span> { <span class="keyword">return</span> }
+
+                <span class="keyword">switch</span> section.<span class="property">id</span> {
+                <span class="keyword">case</span> .<span class="dotAccess">recipes</span>:
+                    section.<span class="property">title</span> = <span class="string">"My recipes"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">links</span>:
+                    section.<span class="property">title</span> = <span class="string">"External links"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">about</span>:
+                    section.<span class="property">title</span> = <span class="string">"About this site"</span>
+                }
+            }
+        }
+    }
+}
+</code></pre><p><em>Each publishing step is passed an instance of <code>PublishingContext</code>, which it can use to mutate the current context in which the website is being published — including its files, folders, and content.</em></p><p>Using the above pattern, we can implement any number of custom publishing steps that’ll fit right in alongside all of the default steps that Publish ships with. This enables us to construct really powerful pipelines in which each step performs a single part of the generation process:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(using: [
+    .<span class="call">addMarkdownFiles</span>(),
+    .<span class="call">copyResources</span>(),
+    .<span class="call">addFavoriteItems</span>(),
+    .<span class="call">addDefaultSectionTitles</span>(),
+    .<span class="call">generateHTML</span>(withTheme: .<span class="dotAccess">delicious</span>),
+    .<span class="call">generateRSSFeed</span>(including: [.<span class="dotAccess">recipes</span>]),
+    .<span class="call">generateSiteMap</span>()
+])
+</code></pre><p><em>Above we’re constructing a completely custom publishing pipeline by calling the <code>publish(using:)</code> API.</em></p><p>To learn more about Publish’s built-in publishing steps, <a href="https://github.com/JohnSundell/Publish/blob/master/Sources/Publish/API/PublishingStep.swift">check out this file</a>.</p><h2>Building an HTML theme</h2><p>Publish uses <a href="https://github.com/johnsundell/plot">Plot</a> as its HTML theming engine, which enables entire HTML pages to be defined using Swift. When using Publish, it’s recommended that you build your own website-specific theme — that can make full use of your own custom metadata, and be completely tailored to fit your website’s design.</p><p>Themes are defined using the <code>Theme</code> type, which uses an <code>HTMLFactory</code> implementation to create all of a website’s HTML pages. Here’s an excerpt of what the implementation for the custom <code>.delicious</code> theme used above may look like:</p><pre><code><span class="keyword">extension</span> <span class="type">Theme</span> <span class="keyword">where</span> <span class="type">Site</span> == <span class="type">DeliciousRecipes</span> {
+    <span class="keyword">static var</span> delicious: <span class="type">Self</span> {
+        <span class="type">Theme</span>(htmlFactory: <span class="type">DeliciousHTMLFactory</span>())
+    }
+
+    <span class="keyword">private struct</span> DeliciousHTMLFactory: <span class="type">HTMLFactory</span> {
+        ...
+        <span class="keyword">func</span> makeItemHTML(for item: <span class="type">Item</span>&lt;<span class="type">DeliciousRecipes</span>&gt;,
+                          context: <span class="type">PublishingContext</span>&lt;<span class="type">DeliciousRecipes</span>&gt;) <span class="keyword">throws</span> -&gt; <span class="type">HTML</span> {
+            <span class="type">HTML</span>(
+                .<span class="call">head</span>(for: item, on: context.<span class="property">site</span>),
+                .<span class="call">body</span>(
+                    .<span class="call">ul</span>(
+                        .<span class="call">class</span>(<span class="string">"ingredients"</span>),
+                        .<span class="call">forEach</span>(item.<span class="property">metadata</span>.<span class="property">ingredients</span>) {
+                            .<span class="call">li</span>(.<span class="call">text</span>($0))
+                        }
+                    ),
+                    .<span class="call">p</span>(
+                        <span class="string">"This will take around "</span>,
+                        <span class="string">"</span>\(<span class="type">Int</span>(item.<span class="property">metadata</span>.<span class="property">preparationTime</span> / <span class="number">60</span>)) <span class="string">"</span>,
+                        <span class="string">"minutes to prepare"</span>
+                    ),
+                    .<span class="call">contentBody</span>(item.<span class="property">body</span>)
+                )
+            )
+        }
+        ...
+    }
+}
+</code></pre><p>Above we’re able to access both built-in item properties, and the custom metadata properties that we defined earlier as part of our website’s <code>ItemMetadata</code> struct, all in a way that retains full type safety.</p><p><em>More thorough documentation on how to build Publish themes, and some of the recommended best practices for doing so, will be added shortly.</em></p><h2>Building plugins</h2><p>Publish also supports plugins, which can be used to share setup code between various projects, or to extend Publish’s built-in functionality in various ways. Just like publishing steps, plugins perform their work by modifying the current <code>PublishingContext</code> — for example by adding files or folders, by mutating the website’s existing content, or by adding Markdown parsing modifiers.</p><p>Here’s an example of a plugin that ensures that all of a website’s items have tags:</p><pre><code><span class="keyword">extension</span> <span class="type">Plugin</span> {
+    <span class="keyword">static var</span> ensureAllItemsAreTagged: <span class="type">Self</span> {
+        <span class="type">Plugin</span>(name: <span class="string">"Ensure that all items are tagged"</span>) { context <span class="keyword">in
+            let</span> allItems = context.<span class="property">sections</span>.<span class="call">flatMap</span> { $0.<span class="property">items</span> }
+
+            <span class="keyword">for</span> item <span class="keyword">in</span> allItems {
+                <span class="keyword">guard</span> !item.<span class="property">tags</span>.<span class="property">isEmpty</span> <span class="keyword">else</span> {
+                    <span class="keyword">throw</span> <span class="type">PublishingError</span>(
+                        path: item.<span class="property">path</span>,
+                        infoMessage: <span class="string">"Item has no tags"</span>
+                    )
+                }
+            }
+        }
+    }
+}
+</code></pre><p>Plugins are then installed by adding the <code>installPlugin</code> step to any publishing pipeline:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(using: [
+    ...
+    .<span class="call">installPlugin</span>(.<span class="dotAccess">ensureAllItemsAreTagged</span>)
+])
+</code></pre><p><em>If your plugin is hosted on GitHub you can use the <code>publish-plugin</code> <a href="https://help.github.com/en/github/administering-a-repository/classifying-your-repository-with-topics#adding-topics-to-your-repository">topic</a> so it can be found with the rest of <a href="https://github.com/topics/publish-plugin?l=swift">community plugins</a>.</em></p><p>For a real-world example of a Publish plugin, check out the <a href="https://github.com/johnsundell/splashpublishplugin">official Splash plugin</a>, which makes it really easy to integrate the <a href="https://github.com/johnsundell/splash">Splash syntax highlighter</a> with Publish.</p><h2>Installation</h2><p>Publish is distributed using the <a href="https://swift.org/package-manager">Swift Package Manager</a>. To install it into a project, add it as a dependency within your <code>Package.swift</code> manifest:</p><pre><code><span class="keyword">let</span> package = <span class="type">Package</span>(
+    ...
+    dependencies: [
+        .<span class="call">package</span>(url: <span class="string">"https://github.com/johnsundell/publish.git"</span>, from: <span class="string">"0.1.0"</span>)
+    ],
+    ...
+)
+</code></pre><p>Then import Publish wherever you’d like to use it:</p><pre><code><span class="keyword">import</span> Publish
+</code></pre><p>For more information on how to use the Swift Package Manager, check out <a href="https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager">this article</a>, or <a href="https://swift.org/package-manager">its official documentation</a>.</p><p>Publish also ships with a command line tool that makes it easy to set up new website projects, and to generate and deploy existing ones. To install that command line tool, simply run <code>make</code> within a local copy of the Publish repo:</p><pre><code>$ git clone https://github.<span class="property">com</span>/<span class="type">JohnSundell</span>/<span class="type">Publish</span>.<span class="property">git</span>
+$ cd <span class="type">Publish</span>
+$ make
+</code></pre><p>Then run <code>publish help</code> for instructions on how to use it.</p><h2>Running and deploying</h2><p>Since all Publish websites are implemented as Swift packages, they can be generated simply by opening up a website’s package in Xcode (by opening its <code>Package.swift</code> file), and then running it using the <code>Product &gt; Run</code> command (or <code>⌘+R</code>).</p><p>Publish can also facilitate the deployment of websites to external servers through its <code>DeploymentMethod</code> API, and ships with built-in implementations for Git and GitHub-based deployments. To define a deployment method for a website, add the <code>deploy</code> step to your publishing pipeline:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(using: [
+    ...
+    .<span class="call">deploy</span>(using: .<span class="call">gitHub</span>(<span class="string">"johnsundell/delicious-recipes"</span>))
+])
+</code></pre><p>Even when added to a pipeline, deployment steps are disabled by default, and are only executed when the <code>--deploy</code> command line flag was passed (which can be added through Xcode’s <code>Product &gt; Scheme &gt; Edit Scheme...</code> menu), or by running the command line tool using <code>publish deploy</code>.</p><p>Publish can also start a <code>localhost</code> web server for local testing and development, by using the <code>publish run</code> command. To regenerate site content with the server running, use Product &gt; Run on your site's package in Xcode.</p><h2>Quick start</h2><p>To quickly get started with Publish, install the command line tool by first cloning this repository, and then run <code>make</code> within the cloned folder:</p><pre><code>$ git clone https://github.<span class="property">com</span>/<span class="type">JohnSundell</span>/<span class="type">Publish</span>.<span class="property">git</span>
+$ cd <span class="type">Publish</span>
+$ make
+</code></pre><p><strong>*Note</strong>: If you encounter an error while running <code>make</code>, ensure that you have your Command Line Tools location set from Xcode's preferences. It's in Preferences &gt; Locations &gt; Locations &gt; Command Line Tools. The dropdown will be blank if it hasn't been set yet._</p><p>Then, create a new folder for your new website project and simply run <code>publish new</code> within it to get started:</p><pre><code>$ mkdir <span class="type">MyWebsite</span>
+$ cd <span class="type">MyWebsite</span>
+$ publish new
+</code></pre><p>Finally, run <code>open Package.swift</code> to open up the project in Xcode to start building your new website.</p><h2>Additional documentation</h2><p>You can find a growing collection of additional documentation about Publish’s various features and capabilities within the <a href="Documentation">Documentation folder</a>.</p><h2>Design and goals</h2><p>Publish was first and foremost designed to be a powerful and heavily customizable tool for building static websites in Swift — starting with <a href="https://swiftbysundell.com">Swift by Sundell</a>, a website which has over 300 individual pages and a pipeline consisting of over 25 publishing steps.</p><p>While the goal is definitely also to make Publish as accessible and easy to use as possible, it will most likely keep being a quite low-level tool that favors code-level control over file system configuration files, and customizability over strongly held conventions.</p><p>The main trade-off of that design is that Publish will likely have a steeper learning curve than most other static site generators, but hopefully it’ll also offer a much greater degree of power, flexibility and type safety as a result. Over time, and with the community’s help, we should be able to make that learning curve much less steep though — through much more thorough documentation and examples, and through shared tools and convenience APIs.</p><p>Publish was also designed with code reuse in mind, and hopefully a much larger selection of themes, tools, plugins and other extensions will be developed by the community over time.</p><h2>Contributions and support</h2><p>Publish is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Publish in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>Since this is a very young project, it’s likely to have many limitations and missing features, which is something that can really only be discovered and addressed as more people start using it. While Publish is used in production to build all of <a href="https://swiftbysundell.com">Swift by Sundell</a>, it’s recommended that you first try it out for your specific use case, to make sure it supports the features that you need.</p><p>This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Publish/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you’ll enjoy using Publish!</p>]]></content:encoded></item><item><guid isPermaLink="true">https://trampampam.github.io/posts/first-post</guid><title>URL Session</title><description>A simple example of networking in Cocoa</description><link>https://trampampam.github.io/posts/first-post</link><pubDate>Wed, 22 Apr 2020 19:38:00 +0300</pubDate><content:encoded><![CDATA[<h1>URL Session</h1><p>Example:</p><pre><code>
 
 <span class="keyword">import</span> Cocoa
 

@@ -1,0 +1,162 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="Hello world!"/><link rel="canonical" href="https://trampampam.github.io/about/publish"/><meta name="twitter:url" content="https://trampampam.github.io/about/publish"/><meta name="og:url" content="https://trampampam.github.io/about/publish"/><title>Publish (lib) | Hello world!</title><meta name="twitter:title" content="Publish (lib) | Hello world!"/><meta name="og:title" content="Publish (lib) | Hello world!"/><meta name="description" content="A description of my first post."/><meta name="twitter:description" content="A description of my first post."/><meta name="og:description" content="A description of my first post."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Hello world!"/></head><body><header><div class="wrapper"><nav class="site-name"><a href="/">Hello world!</a></nav><br/><br/><nav><ul><li><a href="/posts">My posts</a></li><li><a href="/about">About</a></li><li><a href="/FAQ">Faq</a></li></ul></nav></div></header><div class="wrapper"><article class="content"><h1>Publish (lib)</h1><p align="center">
+    <img src="Logo.png" width="400" max-width="90%" alt="Publish" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Publish</strong>, a static site generator built specifically for Swift developers. It enables entire websites to be built using Swift, and supports themes, plugins and tons of other powerful customization options.</p><p>Publish is used to build all of <a href="https://swiftbysundell.com">swiftbysundell.com</a>.</p><h2>Websites as Swift packages</h2><p>When using Publish, each website is defined as a Swift package, which acts as the configuration as to how the website should be generated and deployed — all using native, type-safe Swift code. For example, here’s what the configuration for a food recipe website might look like:</p><pre><code><span class="keyword">struct</span> DeliciousRecipes: <span class="type">Website</span> {
+    <span class="keyword">enum</span> SectionID: <span class="type">String</span>, <span class="type">WebsiteSectionID</span> {
+        <span class="keyword">case</span> recipes
+        <span class="keyword">case</span> links
+        <span class="keyword">case</span> about
+    }
+
+    <span class="keyword">struct</span> ItemMetadata: <span class="type">WebsiteItemMetadata</span> {
+        <span class="keyword">var</span> ingredients: [<span class="type">String</span>]
+        <span class="keyword">var</span> preparationTime: <span class="type">TimeInterval</span>
+    }
+
+    <span class="keyword">var</span> url = <span class="type">URL</span>(string: <span class="string">"https://cooking-with-john.com"</span>)!
+    <span class="keyword">var</span> name = <span class="string">"Delicious Recipes"</span>
+    <span class="keyword">var</span> description = <span class="string">"Many very delicious recipes."</span>
+    <span class="keyword">var</span> language: <span class="type">Language</span> { .<span class="dotAccess">english</span> }
+    <span class="keyword">var</span> imagePath: <span class="type">Path</span>? { <span class="string">"images/logo.png"</span> }
+}
+</code></pre><p>Each website built using Publish can freely decide what kind of sections and metadata that it wants to support. Above, we’ve added three sections — <em>Recipes</em>, <em>Links</em>, and <em>About</em> — which can then contain any number of items. We’ve also added support for our own, site-specific item metadata through the <code>ItemMetadata</code> type, which we’ll be able to use in a fully type-safe manner all throughout our publishing process.</p><h2>Start out simple, and customize when needed</h2><p>While Publish offers a really powerful API that enables almost every aspect of the website generation process to be customized and tweaked, it also ships with a suite of convenience APIs that aims to make it as quick and easy as possible to get started.</p><p>To start generating the <em>Delicious Recipes</em> website we defined above, all we need is a single line of code, that tells Publish which theme to use to generate our website’s HTML:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(withTheme: .<span class="dotAccess">foundation</span>)
+</code></pre><p><em>Not only does the above call render our website’s HTML, it also generates an RSS feed, a site map, and more.</em></p><p>Above we’re using Publish’s built-in Foundation theme, which is a very basic theme mostly provided as a starting point, and as an example of how Publish themes may be built. We can of course at any time replace that theme with our own, custom one, which can include any sort of HTML and resources that we’d like.</p><p>By default, Publish will generate a website’s content based on Markdown files placed within that project’s <code>Content</code> folder, but any number of content items and custom pages can also be added programmatically.</p><p><strong>Publish supports three types of content:</strong></p><p><strong>Sections</strong>, which are created based on the members of each website’s <code>SectionID</code> enum. Each section both has its own HTML page, and can also act as a container for a list of <strong>Items</strong>, which represent the nested HTML pages within that section. Finally, <strong>Pages</strong> provide a way to build custom free-form pages that can be placed into any kind of folder hierarchy.</p><p>Each <code>Section</code>, <code>Item</code>, and <code>Page</code> can define its own set of Content — which can range from text (like titles and descriptions), to HTML, audio, video and various kinds of metadata.</p><p>Here’s how we could extend our basic <code>publish()</code> call from before to inject our own custom publishing pipeline — which enables us to define new items, modify sections, and much more:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(
+    withTheme: .<span class="dotAccess">foundation</span>,
+    additionalSteps: [
+        <span class="comment">// Add an item programmatically</span>
+        .<span class="call">addItem</span>(<span class="type">Item</span>(
+            path: <span class="string">"my-favorite-recipe"</span>,
+            sectionID: .<span class="dotAccess">recipes</span>,
+            metadata: <span class="type">DeliciousRecipes</span>.<span class="type">ItemMetadata</span>(
+                ingredients: [<span class="string">"Chocolate"</span>, <span class="string">"Coffee"</span>, <span class="string">"Flour"</span>],
+                preparationTime: <span class="number">10</span> * <span class="number">60</span>
+            ),
+            tags: [<span class="string">"favorite"</span>, <span class="string">"featured"</span>],
+            content: <span class="type">Content</span>(
+                title: <span class="string">"Check out my favorite recipe!"</span>
+            )
+        )),
+        <span class="comment">// Add default titles to all sections</span>
+        .<span class="call">step</span>(named: <span class="string">"Default section titles"</span>) { context <span class="keyword">in</span>
+            context.<span class="call">mutateAllSections</span> { section <span class="keyword">in
+                guard</span> section.<span class="property">title</span>.<span class="property">isEmpty</span> <span class="keyword">else</span> { <span class="keyword">return</span> }
+
+                <span class="keyword">switch</span> section.<span class="property">id</span> {
+                <span class="keyword">case</span> .<span class="dotAccess">recipes</span>:
+                    section.<span class="property">title</span> = <span class="string">"My recipes"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">links</span>:
+                    section.<span class="property">title</span> = <span class="string">"External links"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">about</span>:
+                    section.<span class="property">title</span> = <span class="string">"About this site"</span>
+                }
+            }
+        }
+    ]
+)
+</code></pre><p>Of course, defining all of a program’s code in one single place is rarely a good idea, so it’s recommended to split up a website’s various generation operations into clearly separated steps — which can be defined by extending the <code>PublishingStep</code> type with static properties or methods, like this:</p><pre><code><span class="keyword">extension</span> <span class="type">PublishingStep</span> <span class="keyword">where</span> <span class="type">Site</span> == <span class="type">DeliciousRecipes</span> {
+    <span class="keyword">static func</span> addDefaultSectionTitles() -&gt; <span class="type">Self</span> {
+        .<span class="call">step</span>(named: <span class="string">"Default section titles"</span>) { context <span class="keyword">in</span>
+            context.<span class="call">mutateAllSections</span> { section <span class="keyword">in
+                guard</span> section.<span class="property">title</span>.<span class="property">isEmpty</span> <span class="keyword">else</span> { <span class="keyword">return</span> }
+
+                <span class="keyword">switch</span> section.<span class="property">id</span> {
+                <span class="keyword">case</span> .<span class="dotAccess">recipes</span>:
+                    section.<span class="property">title</span> = <span class="string">"My recipes"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">links</span>:
+                    section.<span class="property">title</span> = <span class="string">"External links"</span>
+                <span class="keyword">case</span> .<span class="dotAccess">about</span>:
+                    section.<span class="property">title</span> = <span class="string">"About this site"</span>
+                }
+            }
+        }
+    }
+}
+</code></pre><p><em>Each publishing step is passed an instance of <code>PublishingContext</code>, which it can use to mutate the current context in which the website is being published — including its files, folders, and content.</em></p><p>Using the above pattern, we can implement any number of custom publishing steps that’ll fit right in alongside all of the default steps that Publish ships with. This enables us to construct really powerful pipelines in which each step performs a single part of the generation process:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(using: [
+    .<span class="call">addMarkdownFiles</span>(),
+    .<span class="call">copyResources</span>(),
+    .<span class="call">addFavoriteItems</span>(),
+    .<span class="call">addDefaultSectionTitles</span>(),
+    .<span class="call">generateHTML</span>(withTheme: .<span class="dotAccess">delicious</span>),
+    .<span class="call">generateRSSFeed</span>(including: [.<span class="dotAccess">recipes</span>]),
+    .<span class="call">generateSiteMap</span>()
+])
+</code></pre><p><em>Above we’re constructing a completely custom publishing pipeline by calling the <code>publish(using:)</code> API.</em></p><p>To learn more about Publish’s built-in publishing steps, <a href="https://github.com/JohnSundell/Publish/blob/master/Sources/Publish/API/PublishingStep.swift">check out this file</a>.</p><h2>Building an HTML theme</h2><p>Publish uses <a href="https://github.com/johnsundell/plot">Plot</a> as its HTML theming engine, which enables entire HTML pages to be defined using Swift. When using Publish, it’s recommended that you build your own website-specific theme — that can make full use of your own custom metadata, and be completely tailored to fit your website’s design.</p><p>Themes are defined using the <code>Theme</code> type, which uses an <code>HTMLFactory</code> implementation to create all of a website’s HTML pages. Here’s an excerpt of what the implementation for the custom <code>.delicious</code> theme used above may look like:</p><pre><code><span class="keyword">extension</span> <span class="type">Theme</span> <span class="keyword">where</span> <span class="type">Site</span> == <span class="type">DeliciousRecipes</span> {
+    <span class="keyword">static var</span> delicious: <span class="type">Self</span> {
+        <span class="type">Theme</span>(htmlFactory: <span class="type">DeliciousHTMLFactory</span>())
+    }
+
+    <span class="keyword">private struct</span> DeliciousHTMLFactory: <span class="type">HTMLFactory</span> {
+        ...
+        <span class="keyword">func</span> makeItemHTML(for item: <span class="type">Item</span>&lt;<span class="type">DeliciousRecipes</span>&gt;,
+                          context: <span class="type">PublishingContext</span>&lt;<span class="type">DeliciousRecipes</span>&gt;) <span class="keyword">throws</span> -&gt; <span class="type">HTML</span> {
+            <span class="type">HTML</span>(
+                .<span class="call">head</span>(for: item, on: context.<span class="property">site</span>),
+                .<span class="call">body</span>(
+                    .<span class="call">ul</span>(
+                        .<span class="call">class</span>(<span class="string">"ingredients"</span>),
+                        .<span class="call">forEach</span>(item.<span class="property">metadata</span>.<span class="property">ingredients</span>) {
+                            .<span class="call">li</span>(.<span class="call">text</span>($0))
+                        }
+                    ),
+                    .<span class="call">p</span>(
+                        <span class="string">"This will take around "</span>,
+                        <span class="string">"</span>\(<span class="type">Int</span>(item.<span class="property">metadata</span>.<span class="property">preparationTime</span> / <span class="number">60</span>)) <span class="string">"</span>,
+                        <span class="string">"minutes to prepare"</span>
+                    ),
+                    .<span class="call">contentBody</span>(item.<span class="property">body</span>)
+                )
+            )
+        }
+        ...
+    }
+}
+</code></pre><p>Above we’re able to access both built-in item properties, and the custom metadata properties that we defined earlier as part of our website’s <code>ItemMetadata</code> struct, all in a way that retains full type safety.</p><p><em>More thorough documentation on how to build Publish themes, and some of the recommended best practices for doing so, will be added shortly.</em></p><h2>Building plugins</h2><p>Publish also supports plugins, which can be used to share setup code between various projects, or to extend Publish’s built-in functionality in various ways. Just like publishing steps, plugins perform their work by modifying the current <code>PublishingContext</code> — for example by adding files or folders, by mutating the website’s existing content, or by adding Markdown parsing modifiers.</p><p>Here’s an example of a plugin that ensures that all of a website’s items have tags:</p><pre><code><span class="keyword">extension</span> <span class="type">Plugin</span> {
+    <span class="keyword">static var</span> ensureAllItemsAreTagged: <span class="type">Self</span> {
+        <span class="type">Plugin</span>(name: <span class="string">"Ensure that all items are tagged"</span>) { context <span class="keyword">in
+            let</span> allItems = context.<span class="property">sections</span>.<span class="call">flatMap</span> { $0.<span class="property">items</span> }
+
+            <span class="keyword">for</span> item <span class="keyword">in</span> allItems {
+                <span class="keyword">guard</span> !item.<span class="property">tags</span>.<span class="property">isEmpty</span> <span class="keyword">else</span> {
+                    <span class="keyword">throw</span> <span class="type">PublishingError</span>(
+                        path: item.<span class="property">path</span>,
+                        infoMessage: <span class="string">"Item has no tags"</span>
+                    )
+                }
+            }
+        }
+    }
+}
+</code></pre><p>Plugins are then installed by adding the <code>installPlugin</code> step to any publishing pipeline:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(using: [
+    ...
+    .<span class="call">installPlugin</span>(.<span class="dotAccess">ensureAllItemsAreTagged</span>)
+])
+</code></pre><p><em>If your plugin is hosted on GitHub you can use the <code>publish-plugin</code> <a href="https://help.github.com/en/github/administering-a-repository/classifying-your-repository-with-topics#adding-topics-to-your-repository">topic</a> so it can be found with the rest of <a href="https://github.com/topics/publish-plugin?l=swift">community plugins</a>.</em></p><p>For a real-world example of a Publish plugin, check out the <a href="https://github.com/johnsundell/splashpublishplugin">official Splash plugin</a>, which makes it really easy to integrate the <a href="https://github.com/johnsundell/splash">Splash syntax highlighter</a> with Publish.</p><h2>Installation</h2><p>Publish is distributed using the <a href="https://swift.org/package-manager">Swift Package Manager</a>. To install it into a project, add it as a dependency within your <code>Package.swift</code> manifest:</p><pre><code><span class="keyword">let</span> package = <span class="type">Package</span>(
+    ...
+    dependencies: [
+        .<span class="call">package</span>(url: <span class="string">"https://github.com/johnsundell/publish.git"</span>, from: <span class="string">"0.1.0"</span>)
+    ],
+    ...
+)
+</code></pre><p>Then import Publish wherever you’d like to use it:</p><pre><code><span class="keyword">import</span> Publish
+</code></pre><p>For more information on how to use the Swift Package Manager, check out <a href="https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager">this article</a>, or <a href="https://swift.org/package-manager">its official documentation</a>.</p><p>Publish also ships with a command line tool that makes it easy to set up new website projects, and to generate and deploy existing ones. To install that command line tool, simply run <code>make</code> within a local copy of the Publish repo:</p><pre><code>$ git clone https://github.<span class="property">com</span>/<span class="type">JohnSundell</span>/<span class="type">Publish</span>.<span class="property">git</span>
+$ cd <span class="type">Publish</span>
+$ make
+</code></pre><p>Then run <code>publish help</code> for instructions on how to use it.</p><h2>Running and deploying</h2><p>Since all Publish websites are implemented as Swift packages, they can be generated simply by opening up a website’s package in Xcode (by opening its <code>Package.swift</code> file), and then running it using the <code>Product &gt; Run</code> command (or <code>⌘+R</code>).</p><p>Publish can also facilitate the deployment of websites to external servers through its <code>DeploymentMethod</code> API, and ships with built-in implementations for Git and GitHub-based deployments. To define a deployment method for a website, add the <code>deploy</code> step to your publishing pipeline:</p><pre><code><span class="keyword">try</span> <span class="type">DeliciousRecipes</span>().<span class="call">publish</span>(using: [
+    ...
+    .<span class="call">deploy</span>(using: .<span class="call">gitHub</span>(<span class="string">"johnsundell/delicious-recipes"</span>))
+])
+</code></pre><p>Even when added to a pipeline, deployment steps are disabled by default, and are only executed when the <code>--deploy</code> command line flag was passed (which can be added through Xcode’s <code>Product &gt; Scheme &gt; Edit Scheme...</code> menu), or by running the command line tool using <code>publish deploy</code>.</p><p>Publish can also start a <code>localhost</code> web server for local testing and development, by using the <code>publish run</code> command. To regenerate site content with the server running, use Product &gt; Run on your site's package in Xcode.</p><h2>Quick start</h2><p>To quickly get started with Publish, install the command line tool by first cloning this repository, and then run <code>make</code> within the cloned folder:</p><pre><code>$ git clone https://github.<span class="property">com</span>/<span class="type">JohnSundell</span>/<span class="type">Publish</span>.<span class="property">git</span>
+$ cd <span class="type">Publish</span>
+$ make
+</code></pre><p><strong>*Note</strong>: If you encounter an error while running <code>make</code>, ensure that you have your Command Line Tools location set from Xcode's preferences. It's in Preferences &gt; Locations &gt; Locations &gt; Command Line Tools. The dropdown will be blank if it hasn't been set yet._</p><p>Then, create a new folder for your new website project and simply run <code>publish new</code> within it to get started:</p><pre><code>$ mkdir <span class="type">MyWebsite</span>
+$ cd <span class="type">MyWebsite</span>
+$ publish new
+</code></pre><p>Finally, run <code>open Package.swift</code> to open up the project in Xcode to start building your new website.</p><h2>Additional documentation</h2><p>You can find a growing collection of additional documentation about Publish’s various features and capabilities within the <a href="Documentation">Documentation folder</a>.</p><h2>Design and goals</h2><p>Publish was first and foremost designed to be a powerful and heavily customizable tool for building static websites in Swift — starting with <a href="https://swiftbysundell.com">Swift by Sundell</a>, a website which has over 300 individual pages and a pipeline consisting of over 25 publishing steps.</p><p>While the goal is definitely also to make Publish as accessible and easy to use as possible, it will most likely keep being a quite low-level tool that favors code-level control over file system configuration files, and customizability over strongly held conventions.</p><p>The main trade-off of that design is that Publish will likely have a steeper learning curve than most other static site generators, but hopefully it’ll also offer a much greater degree of power, flexibility and type safety as a result. Over time, and with the community’s help, we should be able to make that learning curve much less steep though — through much more thorough documentation and examples, and through shared tools and convenience APIs.</p><p>Publish was also designed with code reuse in mind, and hopefully a much larger selection of themes, tools, plugins and other extensions will be developed by the community over time.</p><h2>Contributions and support</h2><p>Publish is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Publish in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>Since this is a very young project, it’s likely to have many limitations and missing features, which is something that can really only be discovered and addressed as more people start using it. While Publish is used in production to build all of <a href="https://swiftbysundell.com">Swift by Sundell</a>, it’s recommended that you first try it out for your specific use case, to make sure it supports the features that you need.</p><p>This project does not come with GitHub Issues-based support, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Publish/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there.</p><p>Hope you’ll enjoy using Publish!</p></article></div><footer>Hello</footer></body></html>

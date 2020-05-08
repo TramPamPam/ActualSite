@@ -1,0 +1,44 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="Hello world!"/><link rel="canonical" href="https://trampampam.github.io/about/files"/><meta name="twitter:url" content="https://trampampam.github.io/about/files"/><meta name="og:url" content="https://trampampam.github.io/about/files"/><title>Files (lib) | Hello world!</title><meta name="twitter:title" content="Files (lib) | Hello world!"/><meta name="og:title" content="Files (lib) | Hello world!"/><meta name="description" content="A description of my first post."/><meta name="twitter:description" content="A description of my first post."/><meta name="og:description" content="A description of my first post."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Hello world!"/></head><body><header><div class="wrapper"><nav class="site-name"><a href="/">Hello world!</a></nav><br/><br/><nav><ul><li><a href="/posts">My posts</a></li><li><a href="/about">About</a></li><li><a href="/FAQ">Faq</a></li></ul></nav></div></header><div class="wrapper"><article class="content"><h1>Files (lib)</h1><p align="center">
+    <img src="logo.png" width="300" max-width="50%" alt=“Files” />
+</p><p align="center">
+    <a href="https://dashboard.buddybuild.com/apps/5932f7d9b0c2b000015d6b79/build/latest?branch=master">
+        <img src="https://dashboard.buddybuild.com/api/statusImage?appID=5932f7d9b0c2b000015d6b79&branch=master&build=latest" alt="BuddyBuild" />
+    </a>
+    <img src="https://img.shields.io/badge/Swift-5.0-orange.svg" />
+    <a href="https://cocoapods.org/pods/Files">
+        <img src="https://img.shields.io/cocoapods/v/Files.svg" alt="CocoaPods" />
+    </a>
+    <a href="https://github.com/Carthage/Carthage">
+        <img src="https://img.shields.io/badge/carthage-compatible-4BC51D.svg?style=flat" alt="Carthage" />
+    </a>
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/spm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/contact-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Files</strong>, a compact library that provides a nicer way to handle <em>files</em> and <em>folders</em> in Swift. It’s primarily aimed at Swift scripting and tooling, but can also be embedded in applications that need to access the file system. It's essentially a thin wrapper around the <code>FileManager</code> APIs that <code>Foundation</code> provides.</p><h2>Features</h2><ul><li>[X] Modern, object-oriented API for accessing, reading and writing files &amp; folders.</li><li>[X] Unified, simple <code>do, try, catch</code> error handling.</li><li>[X] Easily construct recursive and flat sequences of files and folders.</li></ul><h2>Examples</h2><p>Iterate over the files contained in a folder:</p><pre><code><span class="keyword">for</span> file <span class="keyword">in try</span> <span class="type">Folder</span>(path: <span class="string">"MyFolder"</span>).<span class="property">files</span> {
+    <span class="call">print</span>(file.<span class="property">name</span>)
+}
+</code></pre><p>Rename all files contained in a folder:</p><pre><code><span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"MyFolder"</span>).<span class="property">files</span>.<span class="call">enumerated</span>().<span class="call">forEach</span> { (index, file) <span class="keyword">in
+    try</span> file.<span class="call">rename</span>(to: file.<span class="property">nameWithoutExtension</span> + <span class="string">"</span>\(index)<span class="string">"</span>)
+}
+</code></pre><p>Recursively iterate over all folders in a tree:</p><pre><code><span class="type">Folder</span>.<span class="property">home</span>.<span class="property">subfolders</span>.<span class="property">recursive</span>.<span class="call">forEach</span> { folder <span class="keyword">in</span>
+    <span class="call">print</span>(<span class="string">"Name :</span> \(folder.<span class="property">name</span>)<span class="string">, parent:</span> \(folder.<span class="property">parent</span>)<span class="string">"</span>)
+}
+</code></pre><p>Create, write and delete files and folders:</p><pre><code><span class="keyword">let</span> folder = <span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"/users/john/folder"</span>)
+<span class="keyword">let</span> file = <span class="keyword">try</span> folder.<span class="call">createFile</span>(named: <span class="string">"file.json"</span>)
+<span class="keyword">try</span> file.<span class="call">write</span>(<span class="string">"{\"hello\": \"world\"}"</span>)
+<span class="keyword">try</span> file.<span class="call">delete</span>()
+<span class="keyword">try</span> folder.<span class="call">delete</span>()
+</code></pre><p>Move all files in a folder to another:</p><pre><code><span class="keyword">let</span> originFolder = <span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"/users/john/folderA"</span>)
+<span class="keyword">let</span> targetFolder = <span class="keyword">try</span> <span class="type">Folder</span>(path: <span class="string">"/users/john/folderB"</span>)
+<span class="keyword">try</span> originFolder.<span class="property">files</span>.<span class="call">move</span>(to: targetFolder)
+</code></pre><p>Easy access to system folders:</p><pre><code><span class="type">Folder</span>.<span class="property">current</span>
+<span class="type">Folder</span>.<span class="property">root</span>
+<span class="type">Folder</span>.<span class="property">library</span>
+<span class="type">Folder</span>.<span class="property">temporary</span>
+<span class="type">Folder</span>.<span class="property">home</span>
+<span class="type">Folder</span>.<span class="property">documents</span>
+</code></pre><h2>Installation</h2><p>Files can be easily used in either a Swift script, a command line tool, or in an app for iOS, macOS, tvOS or Linux.</p><h3>Using the Swift Package Manager (preferred)</h3><p>To install Files for use in a Swift Package Manager-powered tool, script or server-side application, add Files as a dependency to your <code>Package.swift</code> file. For more information, please see the <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">Swift Package Manager documentation</a>.</p><pre><code>.<span class="call">package</span>(url: <span class="string">"https://github.com/JohnSundell/Files"</span>, from: <span class="string">"4.0.0"</span>)
+</code></pre><h3>Using CocoaPods or Carthage</h3><p>Please refer to <a href="https://cocoapods.org">CocoaPods’</a> or <a href="https://github.com/Carthage/Carthage">Carthage’s</a> own documentation for instructions on how to add dependencies using those tools.</p><h3>As a file</h3><p>Since all of Files is implemented within a single file, you can easily use it in any project by simply dragging the file <code>Files.swift</code> into your Xcode project.</p><h2>Backstory</h2><p>So, why was this made? As I've migrated most of my build tools and other scripts from languages like Bash, Ruby and Python to Swift, I've found myself lacking an easy way to deal with the file system. Sure, <code>FileManager</code> has a quite nice API, but it can be quite cumbersome to use because of its string-based nature, which makes simple scripts that move or rename files quickly become quite complex.</p><p>So, I made <strong>Files</strong>, to enable me to quickly handle files and folders, in an expressive way. And, since I love open source, I thought - why not package it up and share it with the community? :)</p><h2>Questions or feedback?</h2><p>Feel free to <a href="https://github.com/JohnSundell/Files/issues/new">open an issue</a>, or find me <a href="https://twitter.com/johnsundell">@johnsundell on Twitter</a>.</p></article></div><footer>Hello</footer></body></html>

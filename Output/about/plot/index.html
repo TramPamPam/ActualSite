@@ -1,0 +1,197 @@
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><meta name="og:site_name" content="Hello world!"/><link rel="canonical" href="https://trampampam.github.io/about/plot"/><meta name="twitter:url" content="https://trampampam.github.io/about/plot"/><meta name="og:url" content="https://trampampam.github.io/about/plot"/><title>Plot (lib) | Hello world!</title><meta name="twitter:title" content="Plot (lib) | Hello world!"/><meta name="og:title" content="Plot (lib) | Hello world!"/><meta name="description" content="A description of my first post."/><meta name="twitter:description" content="A description of my first post."/><meta name="og:description" content="A description of my first post."/><meta name="twitter:card" content="summary"/><link rel="stylesheet" href="/styles.css" type="text/css"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><link rel="shortcut icon" href="/images/favicon.png" type="image/png"/><link rel="alternate" href="/feed.rss" type="application/rss+xml" title="Subscribe to Hello world!"/></head><body><header><div class="wrapper"><nav class="site-name"><a href="/">Hello world!</a></nav><br/><br/><nav><ul><li><a href="/posts">My posts</a></li><li><a href="/about">About</a></li><li><a href="/FAQ">Faq</a></li></ul></nav></div></header><div class="wrapper"><article class="content"><h1>Plot (lib)</h1><p align="center">
+    <img src="Logo.png" width="400" max-width="90%" alt="Plot" />
+</p><p align="center">
+    <img src="https://img.shields.io/badge/Swift-5.1-orange.svg" />
+    <a href="https://swift.org/package-manager">
+        <img src="https://img.shields.io/badge/swiftpm-compatible-brightgreen.svg?style=flat" alt="Swift Package Manager" />
+    </a>
+     <img src="https://img.shields.io/badge/platforms-mac+linux-brightgreen.svg?style=flat" alt="Mac + Linux" />
+    <a href="https://twitter.com/johnsundell">
+        <img src="https://img.shields.io/badge/twitter-@johnsundell-blue.svg?style=flat" alt="Twitter: @johnsundell" />
+    </a>
+</p><p>Welcome to <strong>Plot</strong>, a domain-specific language (DSL) for writing type-safe HTML, XML and RSS in Swift. It can be used to build websites, documents and feeds, as a templating tool, or as a renderer for higher-level components and tools. It’s primary focus is on static site generation and Swift-based web development.</p><p>Plot is used to build and render all of <a href="https://swiftbysundell.com">swiftbysundell.com</a>.</p><h2>Write HTML — in Swift!</h2><p>Plot enables you to write HTML using native, fully compiled Swift code, by modeling the HTML5 standard’s various elements as Swift APIs. The result is a very lightweight DSL that lets you build complete web pages in a highly expressive way:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(
+    .<span class="call">head</span>(
+        .<span class="call">title</span>(<span class="string">"My website"</span>),
+        .<span class="call">stylesheet</span>(<span class="string">"styles.css"</span>)
+    ),
+    .<span class="call">body</span>(
+        .<span class="call">div</span>(
+            .<span class="call">h1</span>(<span class="string">"My website"</span>),
+            .<span class="call">p</span>(<span class="string">"Writing HTML in Swift is pretty great!"</span>)
+        )
+    )
+)
+</code></pre><p>Looking at the above, it may at first seem like Plot simply maps each function call directly to an equivalent HTML element — and while that’s the case for <em>some</em> elements, Plot also inserts many kinds of highly valuable metadata automatically. For example, the above expression will result in this HTML:</p><pre><code>&lt;!<span class="type">DOCTYPE</span> html&gt;
+&lt;html&gt;
+    &lt;head&gt;
+        &lt;title&gt;<span class="type">My</span> website&lt;/title&gt;
+        &lt;meta name=<span class="string">"twitter:title"</span> content=<span class="string">"My website"</span>/&gt;
+        &lt;meta name=<span class="string">"og:title"</span> content=<span class="string">"My website"</span>/&gt;
+        &lt;link rel=<span class="string">"stylesheet"</span> href=<span class="string">"styles.css"</span> type=<span class="string">"text/css"</span>/&gt;
+    &lt;/head&gt;
+    &lt;body&gt;
+        &lt;div&gt;
+            &lt;h1&gt;<span class="type">My</span> website&lt;/h1&gt;
+            &lt;p&gt;<span class="type">Writing HTML</span> <span class="keyword">in</span> <span class="type">Swift</span> <span class="keyword">is</span> pretty great!&lt;/p&gt;
+        &lt;/div&gt;
+    &lt;/body&gt;
+&lt;/html&gt;
+</code></pre><p>As you can see above, Plot added both all of the necessary attributes to load the requested CSS stylesheet, along with additional metadata for the page’s title as well — improving page rendering, social media sharing, and search engine optimization.</p><p>Plot ships with a very wide coverage of the HTML5 standard, enabling all sorts of elements to be defined using the same lightweight syntax — such as tables, lists, and inline text styling:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(
+    .<span class="call">body</span>(
+        .<span class="call">h2</span>(<span class="string">"Countries and their capitals"</span>),
+        .<span class="call">table</span>(
+            .<span class="call">tr</span>(.<span class="call">th</span>(<span class="string">"Country"</span>), .<span class="dotAccess">th</span>(<span class="string">"Capital"</span>)),
+            .<span class="call">tr</span>(.<span class="call">td</span>(<span class="string">"Sweden"</span>), .<span class="dotAccess">td</span>(<span class="string">"Stockholm"</span>)),
+            .<span class="call">tr</span>(.<span class="call">td</span>(<span class="string">"Japan"</span>), .<span class="dotAccess">td</span>(<span class="string">"Tokyo"</span>))
+        ),
+        .<span class="call">h2</span>(<span class="string">"List of "</span>, .<span class="dotAccess">strong</span>(<span class="string">"programming languages"</span>)),
+        .<span class="call">ul</span>(
+            .<span class="call">li</span>(<span class="string">"Swift"</span>),
+            .<span class="call">li</span>(<span class="string">"Objective-C"</span>),
+            .<span class="call">li</span>(<span class="string">"C"</span>)
+        )
+    )
+)
+</code></pre><p>Above we’re also using Plot’s powerful composition capabilities, which lets us express all sorts of HTML hierarchies by simply adding new elements as comma-separated values.</p><h2>Applying attributes</h2><p>Attributes can also be applied the exact same way as child elements are added, by simply adding another entry to an element’s comma-separated list of content. For example, here’s how an anchor element with both a CSS class and a URL can be defined:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(
+    .<span class="call">body</span>(
+        .<span class="call">a</span>(.<span class="call">class</span>(<span class="string">"link"</span>), .<span class="dotAccess">href</span>(<span class="string">"https://github.com"</span>), <span class="string">"GitHub"</span>)
+    )
+)
+</code></pre><p>The fact that attributes, elements and inline text are all defined the same way both makes Plot’s API easier to learn, and also enables a really fast and fluid typing experience — as you can simply type <code>.</code> within any context to keep defining new attributes and elements.</p><h2>Type safety built-in</h2><p>Plot makes heavy use of Swift’s advanced generics capabilities to not only make it <em>possible</em> to write HTML and XML using native code, but to also make that process completely type-safe as well.</p><p>All of Plot’s elements and attributes are implemented as context-bound <em>nodes</em>, which both enforces valid HTML semantics, and also enables Xcode and other IDEs to provide rich autocomplete suggestions when writing code using Plot’s DSL.</p><p>For example, above the <code>href</code> attribute was added to an <code>&lt;a&gt;</code> element, which is completely valid. However, if we instead attempted to add that same attribute to a <code>&lt;p&gt;</code> element, we’d get a compiler error:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    <span class="comment">// Compiler error: Referencing static method 'href' on
+    // 'Node' requires that 'HTML.BodyContext' conform to
+    // 'HTMLLinkableContext'.</span>
+    .<span class="call">p</span>(.<span class="call">href</span>(<span class="string">"https://github.com"</span>))
+))
+</code></pre><p>Plot also leverages the Swift type system to verify each document’s element structure as well. For example, within HTML lists (such as <code>&lt;ol&gt;</code> and <code>&lt;ul&gt;</code>), it’s only valid to place <code>&lt;li&gt;</code> elements — and if we break that rule, we’ll again get a compiler error:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    <span class="comment">// Compiler error: Member 'p' in 'Node&lt;HTML.ListContext&gt;'
+    // produces result of type 'Node&lt;Context&gt;', but context
+    // expects 'Node&lt;HTML.ListContext&gt;'.</span>
+    .<span class="call">ul</span>(.<span class="call">p</span>(<span class="string">"Not allowed"</span>))
+))
+</code></pre><p>This high degree of type safety both results in a really pleasant development experience, and that the HTML and XML documents created using Plot will have a much higher chance of being semantically correct — especially when compared to writing documents and markup using raw strings.</p><h2>Defining custom components</h2><p>The same context-bound <code>Node</code> architecture that gives Plot its high degree of type safety also enables more higher-level components to be defined, which can then be mixed and composed the exact same way as elements defined within Plot itself.</p><p>For example, let’s say that we’re building a news website using Plot, and that we’re rendering <code>NewsArticle</code> models in multiple places. Here’s how we could define a reusable <code>newsArticle</code> component that’s bound to the context of an HTML document’s <code>&lt;body&gt;</code>:</p><pre><code><span class="keyword">extension</span> <span class="type">Node</span> <span class="keyword">where</span> <span class="type">Context</span>: <span class="type">HTML</span>.<span class="type">BodyContext</span> {
+    <span class="keyword">static func</span> newsArticle(<span class="keyword">_</span> article: <span class="type">NewsArticle</span>) -&gt; <span class="type">Self</span> {
+        <span class="keyword">return</span> .<span class="call">article</span>(
+            .<span class="call">class</span>(<span class="string">"news"</span>),
+            .<span class="call">img</span>(.<span class="call">src</span>(article.<span class="property">imagePath</span>)),
+            .<span class="call">h1</span>(.<span class="call">text</span>(article.<span class="property">title</span>)),
+            .<span class="call">span</span>(
+                .<span class="call">class</span>(<span class="string">"description"</span>),
+                .<span class="call">text</span>(article.<span class="property">description</span>)
+            )
+        )
+    }
+}
+</code></pre><p>With the above in place, we can now render any of our <code>NewsArticle</code> models using the exact same syntax as we use for built-in elements:</p><pre><code><span class="keyword">func</span> newsArticlePage(for article: <span class="type">NewsArticle</span>) -&gt; <span class="type">HTML</span> {
+    <span class="keyword">return</span> <span class="type">HTML</span>(.<span class="call">body</span>(
+        .<span class="call">div</span>(
+            .<span class="call">class</span>(<span class="string">"wrapper"</span>),
+            .<span class="call">newsArticle</span>(article)
+        )
+    ))
+}
+</code></pre><p>It’s highly recommended that you use the above component-based approach as much as possible when building websites and documents with Plot — as doing so will let you build up a growing library of reusable components, which will most likely accelerate your overall workflow over time.</p><h2>Inline control flow</h2><p>Since Plot is focused on static site generation, it also ships with several control flow mechanisms that let you inline logic when using its DSL. For example, using the <code>.if()</code> command, you can optionally add a node only when a given condition is <code>true</code>:</p><pre><code><span class="keyword">let</span> rating: <span class="type">Rating</span> = ...
+
+<span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">if</span>(rating.<span class="property">hasEnoughVotes</span>,
+        .<span class="call">span</span>(<span class="string">"Average score:</span> \(rating.<span class="property">averageScore</span>)<span class="string">"</span>)
+    )
+))
+</code></pre><p>You can also attach an <code>else</code> clause to the <code>.if()</code> command as well, which will act as a fallback node to be displayed when the condition is <code>false</code>:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">if</span>(rating.<span class="property">hasEnoughVotes</span>,
+        .<span class="call">span</span>(<span class="string">"Average score:</span> \(rating.<span class="property">averageScore</span>)<span class="string">"</span>),
+        else: .<span class="call">span</span>(<span class="string">"Not enough votes yet."</span>)
+    )
+))
+</code></pre><p>Optional values can also be unwrapped inline using the <code>.unwrap()</code> command, which takes an optional to unwrap, and a closure used to transform its value into a node — for example to conditionally display a part of an HTML page only if a user is logged in:</p><pre><code><span class="keyword">let</span> user: <span class="type">User</span>? = <span class="call">loadUser</span>()
+
+<span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">unwrap</span>(user) {
+        .<span class="call">p</span>(<span class="string">"Hello,</span> \($0.<span class="property">name</span>)<span class="string">"</span>)
+    }
+))
+</code></pre><p>Finally, the <code>.forEach()</code> command can be used to transform any Swift <code>Sequence</code> into a group of nodes, which is incredibly useful when constructing lists:</p><pre><code><span class="keyword">let</span> names: [<span class="type">String</span>] = ...
+
+<span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">h2</span>(<span class="string">"People"</span>),
+    .<span class="call">ul</span>(.<span class="call">forEach</span>(names) {
+        .<span class="call">li</span>(.<span class="call">class</span>(<span class="string">"name"</span>), .<span class="dotAccess">text</span>($0))
+    })
+))
+</code></pre><p>Using the above control flow mechanisms, especially when combined with the approach of defining custom components, lets you build really flexible templates, documents and HTML pages — all in a completely type-safe way.</p><h2>Custom elements and attributes</h2><p>While Plot aims to cover as much of the standards associated with the document formats that it supports (see <a href="#compatibility-with-standards">“Compatibility with standards”</a> for more info), chances are that you’ll eventually encounter some form of element or attribute that Plot doesn’t yet cover.</p><p>Thankfully, Plot also makes it trivial to define custom elements and attributes — which is both useful when building more free-form XML documents, and as an <em>“escape hatch”</em> when Plot does not yet support a given part of a standard:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(.<span class="call">body</span>(
+    .<span class="call">element</span>(named: <span class="string">"custom"</span>, text: <span class="string">"Hello..."</span>),
+    .<span class="call">p</span>(
+        .<span class="call">attribute</span>(named: <span class="string">"custom"</span>, value: <span class="string">"...world!"</span>)
+    )
+))
+</code></pre><p>While the above APIs are great for constructing one-off custom elements, or for temporary working around a limitation in Plot’s built-in functionality, it’s (in most cases) recommended to instead either:</p><ul><li><a href="CONTRIBUTING.md#adding-a-new-node-type">Add and submit</a> the missing API if it’s for an element or attribute that Plot should ideally cover.</li><li>Define your own type-safe elements and attributes the same way Plot does — by first extending the relevant document format in order to add your own context type, and then extending the <code>Node</code> type with your own DSL APIs:</li></ul><pre><code><span class="keyword">extension</span> <span class="type">XML</span> {
+    <span class="keyword">enum</span> ProductContext {}
+}
+
+<span class="keyword">extension</span> <span class="type">Node</span> <span class="keyword">where</span> <span class="type">Context</span> == <span class="type">XML</span>.<span class="type">DocumentContext</span> {
+    <span class="keyword">static func</span> product(<span class="keyword">_</span> nodes: <span class="type">Node</span>&lt;<span class="type">XML</span>.<span class="type">ProductContext</span>&gt;...) -&gt; <span class="type">Self</span> {
+        .<span class="call">element</span>(named: <span class="string">"product"</span>, nodes: nodes)
+    }
+}
+
+<span class="keyword">extension</span> <span class="type">Node</span> <span class="keyword">where</span> <span class="type">Context</span> == <span class="type">XML</span>.<span class="type">ProductContext</span> {
+    <span class="keyword">static func</span> name(<span class="keyword">_</span> name: <span class="type">String</span>) -&gt; <span class="type">Self</span> {
+        .<span class="call">element</span>(named: <span class="string">"name"</span>, text: name)
+    }
+
+    <span class="keyword">static func</span> isAvailable(<span class="keyword">_</span> bool: <span class="type">Bool</span>) -&gt; <span class="type">Self</span> {
+        .<span class="call">attribute</span>(named: <span class="string">"available"</span>, value: <span class="type">String</span>(bool))
+    }
+}
+</code></pre><p>The above may at first seem like unnecessary busywork, but just like Plot itself, it can really improve the stability and predictability of your custom documents going forward.</p><h2>Rendering a document</h2><p>Once you’ve finished constructing a document using Plot’s DSL, call the <code>render</code> method to render it into a <code>String</code>, which can optionally be indented using either tabs or spaces:</p><pre><code><span class="keyword">let</span> html = <span class="type">HTML</span>(...)
+
+<span class="keyword">let</span> nonIndentedString = html.<span class="call">render</span>()
+<span class="keyword">let</span> spacesIndentedString = html.<span class="call">render</span>(indentedBy: .<span class="call">spaces</span>(<span class="number">4</span>))
+<span class="keyword">let</span> tabsIndentedString = html.<span class="call">render</span>(indentedBy: .<span class="call">tabs</span>(<span class="number">1</span>))
+</code></pre><p>Individual nodes can also be rendered independently, which makes it possible to use Plot to construct just a single part of a larger document:</p><pre><code><span class="keyword">let</span> header = <span class="type">Node</span>.<span class="call">header</span>(
+    .<span class="call">h1</span>(<span class="string">"Title"</span>),
+    .<span class="call">span</span>(<span class="string">"Description"</span>)
+)
+
+<span class="keyword">let</span> string = header.<span class="call">render</span>()
+</code></pre><p>Plot was built with performance in mind, so regardless of how you render a document, the goal is for that rendering process to be as fast as possible — with very limited node tree traversal and as little string copying and interpolation as possible.</p><h2>RSS feeds, podcasting, and site maps</h2><p>Besides HTML and free-form XML, Plot also ships with DSL APIs for constructing RSS and podcast feeds, as well as SiteMap XMLs for search engine indexing.</p><p>While these APIs are most likely only relevant when building tools and custom generators (the upcoming static site generator Publish includes implementations of all of these formats), they provide the same level of type safety as when building HTML pages using Plot:</p><pre><code><span class="keyword">let</span> rss = <span class="type">RSS</span>(
+    .<span class="call">item</span>(
+        .<span class="call">guid</span>(<span class="string">"https://mysite.com/post"</span>, .<span class="dotAccess">isPermaLink</span>(<span class="keyword">true</span>)),
+        .<span class="call">title</span>(<span class="string">"My post"</span>),
+        .<span class="call">link</span>(<span class="string">"https://mysite.com/post"</span>)
+    )
+)
+
+<span class="keyword">let</span> podcastFeed = <span class="type">PodcastFeed</span>(
+    .<span class="call">title</span>(<span class="string">"My podcast"</span>),
+    .<span class="call">owner</span>(
+        .<span class="call">name</span>(<span class="string">"John Appleseed"</span>),
+        .<span class="call">email</span>(<span class="string">"john.appleseed@url.com"</span>)
+    ),
+    .<span class="call">item</span>(
+        .<span class="call">title</span>(<span class="string">"My first episode"</span>),
+        .<span class="call">audio</span>(
+            url: <span class="string">"https://mycdn.com/episode.mp3"</span>,
+            byteSize: <span class="number">79295410</span>,
+            title: <span class="string">"My first episode"</span>
+        )
+    )
+)
+
+<span class="keyword">let</span> siteMap = <span class="type">SiteMap</span>(
+    .<span class="call">url</span>(
+        .<span class="call">loc</span>(<span class="string">"https://mysite.com/post"</span>),
+        .<span class="call">lastmod</span>(<span class="type">Date</span>()),
+        .<span class="call">changefreq</span>(.<span class="dotAccess">daily</span>),
+        .<span class="call">priority</span>(<span class="number">1</span>)
+    )
+)
+</code></pre><p>For more information about what data is required to build a podcast feed, see <a href="https://itunespartner.apple.com/podcasts">Apple’s podcasting guide</a>, and for more information about the SiteMap format, see <a href="https://www.sitemaps.org/protocol.html">its official spec</a>.</p><h2>Installation</h2><p>Plot is distributed using the <a href="https://swift.org/package-manager">Swift Package Manager</a>. To install it into a project, simply add it as a dependency within your <code>Package.swift</code> manifest:</p><pre><code><span class="keyword">let</span> package = <span class="type">Package</span>(
+    ...
+    dependencies: [
+        .<span class="call">package</span>(url: <span class="string">"https://github.com/johnsundell/plot.git"</span>, from: <span class="string">"0.1.0"</span>)
+    ],
+    ...
+)
+</code></pre><p>Then import Plot wherever you’d like to use it:</p><pre><code><span class="keyword">import</span> Plot
+</code></pre><p>For more information on how to use the Swift Package Manager, check out <a href="https://www.swiftbysundell.com/articles/managing-dependencies-using-the-swift-package-manager">this article</a>, or <a href="https://github.com/apple/swift-package-manager/tree/master/Documentation">its official documentation</a>.</p><h2>Navigating Plot’s API and implementation</h2><p>Plot consists of four core parts, that together make up both its DSL and its overall document rendering API:</p><ul><li><a href="Sources/Plot/API/Node.swift"><code>Node</code></a> is the core building block for all elements and attributes within any Plot document. It can represent elements and attributes, as well as text content and groups of nodes. Each node is bound to a <code>Context</code> type, which determines which kind of DSL APIs that it gets access to (for example <code>HTML.BodyContext</code> for nodes placed within the <code>&lt;body&gt;</code> of an HTML page).</li><li><a href="Sources/Plot/API/Element.swift"><code>Element</code></a> represents an element, and can either be opened and closed using two separate tags (like <code>&lt;body&gt;&lt;/body&gt;</code>) or self-closed (like <code>&lt;img/&gt;</code>). You normally don’t have to interact with this type when using Plot, since you can create instances of it through its DSL.</li><li><a href="Sources/Plot/API/Attribute.swift"><code>Attribute</code></a> represents an attribute attached to an element, such as the <code>href</code> of an <code>&lt;a&gt;</code> element, or the <code>src</code> of an <code>&lt;img&gt;</code> element. You can either construct <code>Attribute</code> values through its initializer, or through the DSL, using the <code>.attribute()</code> command.</li><li><a href="Sources/Plot/API/Document.swift"><code>Document</code> and <code>DocumentFormat</code></a> represent documents of a given format, such as <code>HTML</code>, <code>RSS</code> and <code>PodcastFeed</code>. These are the top level types that you use in order to start a document building session using Plot’s DSL.</li></ul><p>Plot makes heavy use of a technique known as <em><a href="https://www.swiftbysundell.com/articles/phantom-types-in-swift">Phantom Types</a></em>, which is when types are used as “markers” for the compiler, to be able to enforce type safety through <a href="https://www.swiftbysundell.com/articles/using-generic-type-constraints-in-swift-4">generic constraints</a>. Both <code>DocumentFormat</code>, and the <code>Context</code> of a node, element or attribute, are used this way — as these types are never instantiated, but rather just there to associate their values with a given context or format.</p><p>Plot also uses a very <a href="https://www.swiftbysundell.com/articles/lightweight-api-design-in-swift">lightweight API design</a>, minimizing external argument labels in favor of reducing the amount of syntax needed to render a document — giving its API a very “DSL-like” design.</p><h2>Compatibility with standards</h2><p>Plot’s ultimate goal to be fully compatible with all standards that back the document formats that it supports. However, being a very young project, it will most likely need the community’s help to move it closer to that goal.</p><p>The following standards are intended to be covered by Plot’s DSL:</p><ul><li><a href="https://html.spec.whatwg.org">HTML 5.0</a></li><li><a href="https://www.w3.org/TR/REC-xml">XML 1.0</a></li><li><a href="https://validator.w3.org/feed/docs/rss2.html">RSS 2.0</a></li><li><a href="https://help.apple.com/itc/podcasts_connect/#/itcbaf351599">Apple’s RSS extensions for podcasts</a></li><li><a href="https://www.sitemaps.org/protocol.html">The Sitemaps XML format</a></li></ul><p>If you discover an element or attribute that’s missing, please <a href="CONTRIBUTING.md#adding-a-new-node-type">add it</a> and open a Pull Request with that addition.</p><h2>Credits, alternatives and focus</h2><p>Plot was originally written by <a href="https://twitter.com/johnsundell">John Sundell</a> as part of the Publish suite of static site generation tools, which is used to build and generate <a href="https://swiftbysundell.com">Swift by Sundell</a>. That suite also includes the Markdown parser <a href="https://github.com/JohnSundell/Ink">Ink</a>, as well as <a href="https://github.com/JohnSundell/Publish">Publish</a> itself.</p><p>The idea of using Swift to generate HTML has also been explored by many other people and projects in the community, some of them similar to Plot, some of them completely different. For example <a href="https://github.com/vapor/leaf">Leaf</a> by <a href="https://vapor.codes">Vapor</a>, <a href="https://github.com/pointfreeco/swift-html">swift-html</a> by <a href="https://www.pointfree.co">Point-Free</a>, and the <a href="https://github.com/objcio/swift-talk-backend">Swift Talk backend</a> by <a href="https://www.objc.io">objc.io</a>. The fact that there’s a lot of simultaneous innovation within this area is a great thing — since all of these tools (including Plot) have made different decisions around their overall API design and scope, which lets each developer pick the tool that best fits their individual taste and needs (or perhaps build yet another one?).</p><p>Plot’s main focus is on Swift-based static site generation, and on supporting a wide range of formats used when building websites, including RSS and podcast feeds. It’s also tightly integrated with the upcoming Publish static site generator, and was built to enable Publish to be as fast and flexible as possible, without having to take on any third-party dependencies. It was open sourced as a separate project both from an architectural perspective, and to enable other tools to be built on top of it without having to depend on Publish.</p><h2>Contributions and support</h2><p>Plot is developed completely in the open, and your contributions are more than welcome.</p><p>Before you start using Plot in any of your projects, it’s highly recommended that you spend a few minutes familiarizing yourself with its documentation and internal implementation, so that you’ll be ready to tackle any issues or edge cases that you might encounter.</p><p>Since this is a very young project, it’s likely to have many limitations and missing features, which is something that can really only be discovered and addressed as more people start using it. While Plot is used in production to build and render all of <a href="https://swiftbysundell.com">Swift by Sundell</a>, it’s recommended that you first try it out for your specific use case, to make sure it supports the features that you need.</p><p>This project does <a href="CONTRIBUTING.md#bugs-feature-requests-and-support">not come with GitHub Issues-based support</a>, and users are instead encouraged to become active participants in its continued development — by fixing any bugs that they encounter, or by improving the documentation wherever it’s found to be lacking.</p><p>If you wish to make a change, <a href="https://github.com/JohnSundell/Plot/pull/new">open a Pull Request</a> — even if it just contains a draft of the changes you’re planning, or a test that reproduces an issue — and we can discuss it further from there. See <a href="CONTRIBUTING.md">Plot’s contribution guide</a> for more information about how to contribute to this project.</p><p>Hope you’ll enjoy using Plot!</p></article></div><footer>Hello</footer></body></html>

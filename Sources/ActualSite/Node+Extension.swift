@@ -22,7 +22,13 @@ extension Node where Context == HTML.BodyContext {
                         .href(item.path),
                         .text(item.title)
                     )),
-                    .p(.text(item.description))
+                    .p(
+                        .text(item.description)
+                    ),
+                    .p(
+                        .text("Created @ \(item.content.date)")
+                    )
+
                 ))
             }
         )
